@@ -1,5 +1,5 @@
 //
-//  AppDelegate.h
+//  MainViewController.h
 //  Reminders Exporter
 //
 //  Created by WeiHan on 10/05/2018.
@@ -8,9 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic)UIWindow * window;
-
+@interface MainViewController : UIViewController
 
 @end
