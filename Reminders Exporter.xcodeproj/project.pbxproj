@@ -14,9 +14,12 @@
 		6816263120A43DE400B155D1 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263020A43DE400B155D1 /* MainViewController.m */; };
 		6816263420A441C400B155D1 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6816263320A441C400B155D1 /* EventKit.framework */; };
 		6816263620A441CB00B155D1 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6816263520A441CB00B155D1 /* EventKitUI.framework */; };
+		C46B2ABC4ACE1DC62957E281 /* libPods-Reminders Exporter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3CFCDE770D3CFF54BC94099E /* Pods-Reminders Exporter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Reminders Exporter.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Reminders Exporter/Pods-Reminders Exporter.debug.xcconfig"; sourceTree = "<group>"; };
+		3F294F35CDB233F5F5FA26D5 /* Pods-Reminders Exporter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Reminders Exporter.release.xcconfig"; path = "Pods/Target Support Files/Pods-Reminders Exporter/Pods-Reminders Exporter.release.xcconfig"; sourceTree = "<group>"; };
 		6816261920A43D9300B155D1 /* Reminders Exporter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Reminders Exporter.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6816261C20A43D9300B155D1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6816261D20A43D9300B155D1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -28,6 +31,8 @@
 		6816263020A43DE400B155D1 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		6816263320A441C400B155D1 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		6816263520A441CB00B155D1 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
+		688B1BCE20A4A2BB00B7558A /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Reminders Exporter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,18 +42,29 @@
 			files = (
 				6816263620A441CB00B155D1 /* EventKitUI.framework in Frameworks */,
 				6816263420A441C400B155D1 /* EventKit.framework in Frameworks */,
+				C46B2ABC4ACE1DC62957E281 /* libPods-Reminders Exporter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F113426550139ABC8C6AF88 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3CFCDE770D3CFF54BC94099E /* Pods-Reminders Exporter.debug.xcconfig */,
+				3F294F35CDB233F5F5FA26D5 /* Pods-Reminders Exporter.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		6816261020A43D9300B155D1 = {
 			isa = PBXGroup;
 			children = (
 				6816261B20A43D9300B155D1 /* Reminders Exporter */,
 				6816261A20A43D9300B155D1 /* Products */,
 				6816263220A441C400B155D1 /* Frameworks */,
+				4F113426550139ABC8C6AF88 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -69,6 +85,7 @@
 				6816261F20A43D9300B155D1 /* Assets.xcassets */,
 				6816262120A43D9300B155D1 /* LaunchScreen.storyboard */,
 				6816262420A43D9300B155D1 /* Info.plist */,
+				688B1BCE20A4A2BB00B7558A /* PrefixHeader.pch */,
 				6816262520A43D9300B155D1 /* main.m */,
 			);
 			path = "Reminders Exporter";
@@ -88,6 +105,7 @@
 			children = (
 				6816263520A441CB00B155D1 /* EventKitUI.framework */,
 				6816263320A441C400B155D1 /* EventKit.framework */,
+				E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -99,6 +117,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6816262920A43D9300B155D1 /* Build configuration list for PBXNativeTarget "Reminders Exporter" */;
 			buildPhases = (
+				F517301AB9E416F2CF08377E /* [CP] Check Pods Manifest.lock */,
 				6816261520A43D9300B155D1 /* Sources */,
 				6816261620A43D9300B155D1 /* Frameworks */,
 				6816261720A43D9300B155D1 /* Resources */,
@@ -156,6 +175,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F517301AB9E416F2CF08377E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Reminders Exporter-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6816261520A43D9300B155D1 /* Sources */ = {
@@ -288,10 +328,13 @@
 		};
 		6816262A20A43D9300B155D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3CFCDE770D3CFF54BC94099E /* Pods-Reminders Exporter.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6UU243CA64;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = $SRCROOT/$PRODUCT_NAME/PrefixHeader.pch;
 				INFOPLIST_FILE = "Reminders Exporter/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -303,10 +346,13 @@
 		};
 		6816262B20A43D9300B155D1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3F294F35CDB233F5F5FA26D5 /* Pods-Reminders Exporter.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6UU243CA64;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = $SRCROOT/$PRODUCT_NAME/PrefixHeader.pch;
 				INFOPLIST_FILE = "Reminders Exporter/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

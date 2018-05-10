@@ -6,8 +6,6 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-@interface MainViewController : UIViewController
+@interface MainViewController : BASEVIEWCONTROLLER
 
 @end

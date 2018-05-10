@@ -22,31 +22,6 @@
     [super viewDidLoad];
 
     self.view.backgroundColor = [UIColor whiteColor];
-
-    switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder]) {
-        case EKAuthorizationStatusAuthorized:
-            NSLog(@"Authorized!");
-            [self _fetchReminders];
-            break;
-
-        case EKAuthorizationStatusDenied:
-        case EKAuthorizationStatusRestricted:
-            NSLog(@"Failed!");
-            break;
-
-        case EKAuthorizationStatusNotDetermined:
-            NSLog(@"Not Yet!");
-
-            [self.store requestAccessToEntityType:EKEntityTypeReminder
-                                       completion:^(BOOL granted, NSError *_Nullable error) {
-            if (granted) {
-                [self _fetchReminders];
-            } else {
-                NSLog(@"%s: %@", __func__, error);
-            }
-        }];
-            break;
-    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -70,14 +45,57 @@
 
 - (void)_fetchReminders
 {
-    NSPredicate *predicate = [self.store predicateForRemindersInCalendars:nil];
+    NSPredicate *predicate = [self.store predicateForIncompleteRemindersWithDueDateStarting:nil ending:nil calendars:nil];
 
     [self.store fetchRemindersMatchingPredicate:predicate
                                      completion:^(NSArray *reminders) {
-        for (EKReminder *reminder in reminders) {
-            NSLog(@"%@", reminder);
-        }
+        reminders = [reminders sortedArrayUsingComparator:^NSComparisonResult (EKReminder *obj1, EKReminder *obj2) {
+            return [obj1.calendar.calendarIdentifier compare:obj2.calendar.calendarIdentifier];
+        }];
     }];
+}
+
+#pragma mark - BuildViewDelegate
+
+- (void)buildSubview:(UIView *)containerView controller:(BaseViewController *)viewController
+{
+}
+
+- (void)loadDataForController:(BaseViewController *)viewController
+{
+    switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder]) {
+        case EKAuthorizationStatusAuthorized:
+            DDLogDebug(@"Authorized!");
+            [self _fetchReminders];
+            break;
+
+        case EKAuthorizationStatusDenied:
+        case EKAuthorizationStatusRestricted:
+            DDLogError(@"Failed!");
+            break;
+
+        case EKAuthorizationStatusNotDetermined:
+            DDLogDebug(@"Not Yet!");
+
+            [self.store requestAccessToEntityType:EKEntityTypeReminder
+                                       completion:^(BOOL granted, NSError *_Nullable error) {
+            if (granted) {
+                [self _fetchReminders];
+            } else {
+                DDLogError(@"%s: %@", __func__, error);
+            }
+        }];
+            break;
+    }
+}
+
+- (void)tearDown:(BaseViewController *)viewController
+{
+}
+
+- (BOOL)shouldInvalidateDataForController:(BaseViewController *)viewController
+{
+    return NO;
 }
 
 @end
