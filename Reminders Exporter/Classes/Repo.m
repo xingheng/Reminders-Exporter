@@ -15,7 +15,7 @@
     if (self = [super initWithURL:localFileURL error:error]) {
 
     } else if (flag) {
-        self = [Repo initializeEmptyRepositoryAtFileURL:localFileURL options:nil error:error];
+        self = [[super class] initializeEmptyRepositoryAtFileURL:localFileURL options:nil error:error];
     }
 
     return self;
