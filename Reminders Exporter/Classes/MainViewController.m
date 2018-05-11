@@ -6,8 +6,10 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
-#import "MainViewController.h"
 #import <EventKit/EventKit.h>
+#import "MainViewController.h"
+#import "EKGroup.h"
+#import "PathUtility.h"
 
 @interface MainViewController ()
 
@@ -45,13 +47,36 @@
 
 - (void)_fetchReminders
 {
+    DDLogVerbose(@"Fetching reminders...");
     NSPredicate *predicate = [self.store predicateForIncompleteRemindersWithDueDateStarting:nil ending:nil calendars:nil];
 
     [self.store fetchRemindersMatchingPredicate:predicate
                                      completion:^(NSArray *reminders) {
-        reminders = [reminders sortedArrayUsingComparator:^NSComparisonResult (EKReminder *obj1, EKReminder *obj2) {
-            return [obj1.calendar.calendarIdentifier compare:obj2.calendar.calendarIdentifier];
-        }];
+        DDLogVerbose(@"Finish fetching...");
+        NSMutableArray<EKGroup *> *groups = [NSMutableArray new];
+
+        for (EKReminder *reminder in reminders) {
+            EKGroup *group = [groups bk_match:^BOOL (EKGroup *obj) {
+                return [obj.calendar.calendarIdentifier isEqualToString:reminder.calendar.calendarIdentifier];
+            }];
+
+            if (!group) {
+                group = [[EKGroup alloc] initWithCalendar:reminder.calendar];
+                [groups addObject:group];
+            }
+
+            [group addReminder:reminder];
+        }
+
+        NSURL *repoURL = GetReminderRepoRootDirectoryPath();
+
+        for (EKGroup *group in groups) {
+            if (![group serializeToFile:repoURL]) {
+                NSAssert(NO, @"Fatal!");
+            }
+        }
+
+        DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
     }];
 }
 
@@ -78,7 +103,7 @@
             DDLogDebug(@"Not Yet!");
 
             [self.store requestAccessToEntityType:EKEntityTypeReminder
-                                       completion:^(BOOL granted, NSError *_Nullable error) {
+                                       completion:^(BOOL granted, NSError *error) {
             if (granted) {
                 [self _fetchReminders];
             } else {

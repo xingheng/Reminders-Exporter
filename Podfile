@@ -2,7 +2,7 @@ platform :ios, '9.0'
 inhibit_all_warnings!
 
 target 'Reminders Exporter' do
-    pod 'CocoaLumberjack', '~> 3.2'
+    pod 'CocoaLumberjack'
     pod 'libextobjc', '~> 0.4'
     pod 'BlocksKit/Core', '~> 2.2.5'  # https://github.com/zwaldowski/BlocksKit/issues/282
     pod 'Masonry', '1.1.0'
