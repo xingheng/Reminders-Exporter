@@ -88,7 +88,6 @@ static BOOL ExportDictionaryToJSONFile(NSDictionary *dict, NSURL *path)
         return nil;
     }
 
-    DDLogDebug(@"path: %@", fileURL);
     return fileURL;
 }
 

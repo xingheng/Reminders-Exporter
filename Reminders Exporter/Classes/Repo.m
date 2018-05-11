@@ -10,4 +10,15 @@
 
 @implementation Repo
 
+- (instancetype)initWithURL:(NSURL *)localFileURL createIfNotExist:(BOOL)flag error:(NSError * _Nullable __autoreleasing *)error
+{
+    if (self = [super initWithURL:localFileURL error:error]) {
+
+    } else if (flag) {
+        self = [Repo initializeEmptyRepositoryAtFileURL:localFileURL options:nil error:error];
+    }
+
+    return self;
+}
+
 @end
