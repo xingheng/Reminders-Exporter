@@ -88,7 +88,7 @@
             DDLogError(@"Initialize the repo %@ failed with error: %@", repoURL, error.localizedDescription);
         }
 
-        (void)reminderRepo; // ToDo
+         [reminderRepo indexStatus];
     }];
 }
 
