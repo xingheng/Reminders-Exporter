@@ -14,4 +14,6 @@
 
 - (void)indexStatus;
 
+- (void)fetchRemote:(NSString *)remoteName URL:(NSString *)url credentialProvider:(GTCredentialProvider *)provider;
+
 @end
