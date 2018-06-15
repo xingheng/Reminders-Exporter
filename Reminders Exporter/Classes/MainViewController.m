@@ -8,6 +8,7 @@
 
 #import <EventKit/EventKit.h>
 #import "MainViewController.h"
+#import "RepositoryViewController.h"
 #import "EKGroup.h"
 #import "PathUtility.h"
 #import "Repo.h"
@@ -15,6 +16,8 @@
 @interface MainViewController ()
 
 @property (nonatomic, strong) EKEventStore *store;
+
+@property (nonatomic, strong) Repo *repository;
 
 @end
 
@@ -24,7 +27,9 @@
 {
     [super viewDidLoad];
 
+    self.title = @"Reminders";
     self.view.backgroundColor = [UIColor whiteColor];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(rightBarButtonTapped:)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -42,6 +47,32 @@
     }
 
     return _store;
+}
+
+- (Repo *)repository
+{
+    if (!_repository) {
+        NSError *error = nil;
+        _repository = [[Repo alloc] initWithURL:GetReminderRepoRootDirectoryPath()
+                               createIfNotExist:YES
+                                          error:&error];
+
+        if (error) {
+            DDLogError(@"Initialize the repo failed with error: %@", error.localizedDescription);
+        }
+    }
+
+    return _repository;
+}
+
+#pragma mark - Actions
+
+- (void)rightBarButtonTapped:(id)sender
+{
+    RepositoryViewController *repoVC = [RepositoryViewController new];
+
+    repoVC.repository = self.repository;
+    [self pushViewController:repoVC];
 }
 
 #pragma mark - Private
@@ -69,7 +100,7 @@
             [group addReminder:reminder];
         }
 
-        NSURL *repoURL = GetReminderRepoRootDirectoryPath();
+        NSURL *repoURL = self.repository.fileURL;
 
         for (EKGroup *group in groups) {
             if (![group serializeToFile:repoURL]) {
@@ -78,17 +109,7 @@
         }
 
         DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
-
-        NSError *error = nil;
-        Repo *reminderRepo = [[Repo alloc] initWithURL:repoURL
-                                      createIfNotExist:YES
-                                                 error:&error];
-
-        if (error) {
-            DDLogError(@"Initialize the repo %@ failed with error: %@", repoURL, error.localizedDescription);
-        }
-
-         [reminderRepo indexStatus];
+        [self.repository indexStatus];
     }];
 }
 

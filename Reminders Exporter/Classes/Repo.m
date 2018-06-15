@@ -10,10 +10,9 @@
 
 @implementation Repo
 
-- (instancetype)initWithURL:(NSURL *)localFileURL createIfNotExist:(BOOL)flag error:(NSError * _Nullable __autoreleasing *)error
+- (instancetype)initWithURL:(NSURL *)localFileURL createIfNotExist:(BOOL)flag error:(NSError *_Nullable __autoreleasing *)error
 {
     if (self = [super initWithURL:localFileURL error:error]) {
-
     } else if (flag) {
         self = [Repo initializeEmptyRepositoryAtFileURL:localFileURL options:nil error:error];
     }
@@ -37,24 +36,33 @@
 
         switch (flag) {
             case GTFileStatusNewInWorktree:
+
                 if (![index addFile:filepath error:&error]) {
                     DDLogError(@"%@", error);
                 }
+
                 hasChanges |= YES;
                 break;
+
             case GTFileStatusDeletedInWorktree:
+
                 if (![index removeFile:filepath error:&error]) {
                     DDLogError(@"%@", error);
                 }
+
                 hasChanges |= YES;
                 break;
+
             case GTFileStatusModifiedInWorktree:
             case GTFileStatusRenamedInWorktree:
+
                 if (![index updatePathspecs:@[filepath] error:&error passingTest:nil]) {
                     DDLogError(@"%@", error);
                 }
+
                 hasChanges |= YES;
                 break;
+
             default:
                 break;
         }
@@ -86,7 +94,7 @@
     NSError *error = nil;
 
     NSArray<NSString *> *remoteNames = [self remoteNamesWithError:&error];
-    BOOL existing = [remoteNames bk_any:^BOOL(NSString *obj) {
+    BOOL existing = [remoteNames bk_any:^BOOL (NSString *obj) {
         return [obj isEqualToString:remoteName];
     }];
 
@@ -99,11 +107,11 @@
     }
 
     [self fetchRemote:remote
-          withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider : provider }
+          withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider: provider }
                 error:&error
              progress:^(const git_transfer_progress *stats, BOOL *stop) {
-                 DDLogVerbose(@"Receiving objects: %f%% (%d/%d", 1.0 * stats->received_objects / stats->total_objects, stats->received_objects, stats->total_objects);
-     }];
+        DDLogVerbose(@"Receiving objects: %f%% (%d/%d", 1.0 * stats->received_objects / stats->total_objects, stats->received_objects, stats->total_objects);
+    }];
 
     DDLogDebug(@"error: %@", error);
 }
@@ -117,6 +125,7 @@
     NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:self.fileURL.path];
 
     NSString *path = nil;
+
     while ((path = [enumerator nextObject])) {
         if ([path hasPrefix:@"."]) {
             [enumerator skipDescendants]; // Skip the hidden files.

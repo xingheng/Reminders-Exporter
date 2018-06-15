@@ -6,6 +6,7 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
+#import <DSBaseViewController/BaseNavigationController.h>
 #import "AppDelegate.h"
 #import "MainViewController.h"
 
@@ -23,7 +24,8 @@
     [self setupDDLog];
 
     MainViewController *mainVC = [MainViewController new];
-    self.window.rootViewController = mainVC;
+    BaseNavigationController *naviVC = [[BaseNavigationController alloc] initWithRootViewController:mainVC];
+    self.window.rootViewController = naviVC;
 
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];

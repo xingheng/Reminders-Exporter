@@ -10,7 +10,7 @@
 
 @interface Repo : GTRepository
 
-- (instancetype)initWithURL:(NSURL *)localFileURL createIfNotExist:(BOOL)flag error:(NSError * _Nullable __autoreleasing *)error;
+- (instancetype)initWithURL:(NSURL *)localFileURL createIfNotExist:(BOOL)flag error:(NSError *_Nullable __autoreleasing *)error;
 
 - (void)indexStatus;
 

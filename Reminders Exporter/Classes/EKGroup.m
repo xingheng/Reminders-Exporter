@@ -32,7 +32,6 @@ static BOOL ExportDictionaryToJSONFile(NSDictionary *dict, NSURL *path)
     return YES;
 }
 
-
 #pragma mark - EKGroup
 
 @interface EKGroup ()
@@ -114,12 +113,16 @@ static BOOL ExportDictionaryToJSONFile(NSDictionary *dict, NSURL *path)
     switch (self.calendar.type) {
         case EKCalendarTypeLocal:
             return @"Local";
+
         case EKCalendarTypeCalDAV:
             return @"CalDAV";
+
         case EKCalendarTypeExchange:
             return @"Exchange";
+
         case EKCalendarTypeSubscription:
             return @"Subscription";
+
         case EKCalendarTypeBirthday:
             return @"Birthday";
     }

@@ -19,6 +19,15 @@
 #define DS_SHORTHAND
 #import <DSBaseViewController/DSBaseViewController.h>
 
+#import <DSUtility/DSUtility.h>
+#import <DSUtility/NSObject+va_list.h>
+#import <DSUtility/UIColor+HexString.h>
+#import <DSUtility/UIImage+LoadImage.h>
+#import <DSUtility/UIView+ViewHierarchy.h>
+
+
+#define THEME_BLACK_COLOR    RGB(41, 41, 41)
+
 #if DEBUG
 static const DDLogLevel ddLogLevel = DDLogLevelVerbose;
 #else
