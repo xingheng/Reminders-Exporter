@@ -1,5 +1,5 @@
 //
-//  MainViewController.m
+//  RemindersViewController.m
 //  Reminders Exporter
 //
 //  Created by WeiHan on 10/05/2018.
@@ -7,13 +7,14 @@
 //
 
 #import <EventKit/EventKit.h>
-#import "MainViewController.h"
+#import "RemindersViewController.h"
 #import "RepositoryViewController.h"
 #import "EKGroup.h"
 #import "PathUtility.h"
-#import "Repo.h"
+#import "Repo+UserActions.h"
+#import "UserPreferences.h"
 
-@interface MainViewController ()
+@interface RemindersViewController ()
 
 @property (nonatomic, strong) EKEventStore *store;
 
@@ -21,7 +22,7 @@
 
 @end
 
-@implementation MainViewController
+@implementation RemindersViewController
 
 - (void)viewDidLoad
 {
@@ -109,7 +110,8 @@
         }
 
         DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
-        [self.repository indexStatus];
+        [self.repository commitWorkingFiles];
+        [self.repository pushToRemotes];
     }];
 }
 

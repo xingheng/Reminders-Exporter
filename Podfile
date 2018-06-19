@@ -15,4 +15,5 @@ target 'Reminders Exporter' do
     pod 'RETableViewManager', '~> 1.7'
     pod 'DSUtility'
     pod 'HUDHelper'
+    pod 'UserDefaultsHelper', '~> 0.1'
 end

@@ -7,12 +7,17 @@
 //
 
 #import <RETableViewManager/RETableViewManager.h>
+#import <RETableViewManager/RETableViewOptionsController.h>
 #import <DSUtility/AlertHelper.h>
 #import "RepositoryViewController.h"
+#import "UserPreferences.h"
+#import "Repo+UserActions.h"
 
 @interface RepositoryViewController () <RETableViewManagerDelegate>
 
 @property (nonatomic, strong) RETableViewManager *tableManager;
+
+@property (nonatomic, assign) BOOL showReservedNewRemote;
 
 @end
 
@@ -41,48 +46,6 @@
     [self _reloadTable];
 }
 
-- (void)addRemoteButtonTapped:(id)sender
-{
-    AlertHelper *alert = [AlertHelper alertControllerWithTitle:@"Add a new remote entry"
-                                                       message:@"git remote add <origin>"
-                                                preferredStyle:UIAlertControllerStyleAlert];
-
-    @weakify(alert);
-
-    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = @"origin";
-    }];
-    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        textField.placeholder = @"https://github.com/username/reminders-data.git";
-    }];
-
-    [alert addDefaultAction:@"Add"
-                    handler:^(UIAlertAction *action) {
-        @strongify(alert);
-        NSString *strName = alert.textFields[0].text;
-        NSString *strURL = alert.textFields[1].text;
-
-        if (IsNullString(strName)) {
-            strName = alert.textFields[0].placeholder;
-        }
-
-        NSError *error = nil;
-        GTRemote *remote = [GTRemote createRemoteWithName:strName
-                                                URLString:strURL
-                                             inRepository:self.repository
-                                                    error:&error];
-
-        if (!remote || error) {
-            HUDToast(self.view).title(@"Failed to add remote").subTitle(error.description).delay(5).show();
-        } else {
-            [self _reloadTable];
-        }
-    }];
-    [alert addCancelAction:@"Cancel"
-                   handler:nil];
-    [alert presentInViewController:self];
-}
-
 #pragma mark - Private
 
 - (void)_reloadTable
@@ -90,11 +53,10 @@
     [self.tableManager.sections makeObjectsPerformSelector:@selector(removeAllItems)];
     [self.tableManager removeAllSections];
 
-    RETableViewSection *section = [RETableViewSection section];
+    RETableViewSection *section = [RETableViewSection sectionWithHeaderTitle:@"Local Info"];
     @weakify(self);
 
     if (section) {
-        section.headerTitle = @"Local Info";
         GTBranch *currentBranch = [self.repository currentBranchWithError:nil];
 
         RETableViewItem *item = [RETableViewItem itemWithTitle:@"Repository Name"
@@ -115,7 +77,7 @@
         item.detailLabelText = currentBranch.name;
         [section addItem:item];
 
-        item = [RETableViewItem itemWithTitle:@"Latest commit"
+        item = [RETableViewItem itemWithTitle:@"Latest Commit"
                                 accessoryType:UITableViewCellAccessoryNone
                              selectionHandler:^(RETableViewItem *item) {
             [item deselectRowAnimated:YES];
@@ -125,12 +87,15 @@
         [section addItem:item];
 
         item = [RETableViewItem itemWithTitle:@"Signature"
-                                accessoryType:UITableViewCellAccessoryDisclosureIndicator
+                                accessoryType:UITableViewCellAccessoryDetailButton
                              selectionHandler:^(RETableViewItem *item) {
             [item deselectRowAnimated:YES];
         }];
+        item.accessoryButtonTapHandler = ^(id item) {
+            HUDToast(self.view).title(@"Edit signature in Setting page!").delay(2).show();
+        };
         item.style = UITableViewCellStyleValue1;
-        item.detailLabelText = [self.repository userSignatureForNow].name;
+        item.detailLabelText = GetSignature()[SignatureUsername];
         [section addItem:item];
     }
 
@@ -142,6 +107,10 @@
         [self.tableManager addSection:[self _sectionForRemote:remote]];
     }
 
+    if (self.showReservedNewRemote) {
+        [self.tableManager addSection:[self _sectionForNewRemote]];
+    }
+
     section = [RETableViewSection section];
 
     if (section) {
@@ -150,7 +119,8 @@
                                               selectionHandler:^(RETableViewItem *item) {
             @strongify(self);
             [item deselectRowAnimated:YES];
-            [self addRemoteButtonTapped:item];
+            self.showReservedNewRemote = YES;
+            [self _reloadTable];
         }];
         item.style = UITableViewCellStyleDefault;
         item.textAlignment = NSTextAlignmentCenter;
@@ -164,13 +134,11 @@
 
 - (RETableViewSection *)_sectionForRemote:(GTRemote *)remote
 {
-    RETableViewSection *section = [RETableViewSection section];
+    RETableViewSection *section = [RETableViewSection sectionWithHeaderTitle:@"Remote Info"];
 
     @weakify(self);
 
     if (section) {
-        section.headerTitle = @"Remote Info";
-
         RETableViewItem *item = [RETableViewItem itemWithTitle:@"Remote Name"
                                                  accessoryType:UITableViewCellAccessoryNone
                                               selectionHandler:^(RETableViewItem *item) {
@@ -193,6 +161,21 @@
         item.detailLabelText = remote.URLString;
         [section addItem:item];
 
+        NSString *urlHost = [NSURL URLWithString:remote.URLString].host;
+        NSDictionary *credentialDict = GetCredentials()[urlHost];
+
+        item = [RETableViewItem itemWithTitle:@"Credential"
+                                accessoryType:UITableViewCellAccessoryDetailButton
+                             selectionHandler:^(RETableViewItem *item) {
+            [item deselectRowAnimated:YES];
+        }];
+        item.accessoryButtonTapHandler = ^(id item) {
+            HUDToast(self.view).title(@"Edit credential in Setting page!").delay(2).show();
+        };
+        item.style = UITableViewCellStyleValue1;
+        item.detailLabelText = credentialDict[CredentialKeyUsername] ? : @"None";
+        [section addItem:item];
+
         GTBranch *remoteBranch = [[self.repository remoteBranchesWithError:nil] bk_match:^BOOL (GTBranch *obj) {
             return [obj.remoteName isEqualToString:remote.name];
         }];
@@ -200,7 +183,9 @@
         item = [RETableViewItem itemWithTitle:@"Push"
                                 accessoryType:UITableViewCellAccessoryNone
                              selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
             [item deselectRowAnimated:YES];
+            [self.repository pushToRemotes];
         }];
         item.style = UITableViewCellStyleValue1;
         item.detailLabelText = [remoteBranch targetCommitWithError:nil].commitDate.description;
@@ -213,7 +198,7 @@
             @strongify(self);
 
             AlertHelper *alert = [AlertHelper alertControllerWithTitle:@"Deleting this remote?"
-                                                               message:@"git remote remove <origin>"
+                                                               message:[NSString stringWithFormat:@"git remote remove %@", remote.name]
                                                         preferredStyle:UIAlertControllerStyleActionSheet];
             [alert addDestructiveAction:@"Delete"
                                 handler:^(UIAlertAction *action) {
@@ -224,6 +209,74 @@
             [alert presentInViewController:self];
         }];
         item.style = UITableViewCellStyleDefault;
+        [section addItem:item];
+    }
+
+    return section;
+}
+
+- (RETableViewSection *)_sectionForNewRemote
+{
+    RETableViewSection *section = [RETableViewSection sectionWithHeaderTitle:@"New Remote Info"];
+
+    @weakify(self);
+
+    if (section) {
+        RETextItem *textItemName = [RETextItem itemWithTitle:@"Remote Name"
+                                                       value:@""
+                                                 placeholder:@"origin"];
+        textItemName.style = UITableViewCellStyleValue1;
+        textItemName.autocorrectionType = UITextAutocorrectionTypeNo;
+        [section addItem:textItemName];
+
+        RETextItem *textItemURL = [RETextItem itemWithTitle:@"URL"
+                                                      value:@""
+                                                placeholder:@"https://github.com/username/reminders-data.git"];
+        textItemURL.style = UITableViewCellStyleValue1;
+        textItemURL.autocorrectionType = UITextAutocorrectionTypeNo;
+        [section addItem:textItemURL];
+
+        @weakify(textItemName);
+        @weakify(textItemURL);
+
+        RETableViewItem *item = [RETableViewItem itemWithTitle:@"Save"
+                                                 accessoryType:UITableViewCellAccessoryNone
+                                              selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
+            @strongify(textItemName);
+            @strongify(textItemURL);
+
+            [item deselectRowAnimated:YES];
+            NSString *strName = textItemName.value;
+            NSString *strURL = textItemURL.value;
+
+            if (IsNullString(strName)) {
+                strName = textItemName.placeholder;
+            }
+
+            NSError *error = nil;
+            GTRemote *remote = [GTRemote createRemoteWithName:strName
+                                                    URLString:strURL
+                                                 inRepository:self.repository
+                                                        error:&error];
+
+            if (!remote || error) {
+                HUDToast(self.view).title(@"Failed to add remote").subTitle(error.description).delay(5).show();
+            } else {
+                self.showReservedNewRemote = NO;
+                [self _reloadTable];
+            }
+        }];
+        [section addItem:item];
+
+        item = [RETableViewItem itemWithTitle:@"Cancel"
+                                accessoryType:UITableViewCellAccessoryNone
+                             selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
+            [item deselectRowAnimated:YES];
+            self.showReservedNewRemote = NO;
+            [self _reloadTable];
+        }];
         [section addItem:item];
     }
 

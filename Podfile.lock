@@ -78,6 +78,7 @@ PODS:
     - REFormattedNumberField (~> 1.1.5)
     - REValidation (~> 0.1.4)
   - REValidation (0.1.4)
+  - UserDefaultsHelper (0.1.2)
 
 DEPENDENCIES:
   - BlocksKit/Core (~> 2.2.5)
@@ -89,6 +90,7 @@ DEPENDENCIES:
   - libextobjc (~> 0.4)
   - Masonry (= 1.1.0)
   - RETableViewManager (~> 1.7)
+  - UserDefaultsHelper (~> 0.1)
 
 SPEC REPOS:
   https://bitbucket.org/UItachi/specs.git:
@@ -105,6 +107,7 @@ SPEC REPOS:
     - REFormattedNumberField
     - RETableViewManager
     - REValidation
+    - UserDefaultsHelper
 
 SPEC CHECKSUMS:
   BlocksKit: 7f422b971407001178d181a43b99014ea2591fe6
@@ -119,7 +122,8 @@ SPEC CHECKSUMS:
   REFormattedNumberField: 70fc5fb1218ebd5ee9983820defd12806d5c6ec6
   RETableViewManager: 0f24d796c42c0890d38c79cc9aeb3871e186726e
   REValidation: 38c4de1be58455f8b00aab208ac80db316a66b7f
+  UserDefaultsHelper: 96ec1f1c68d37db01da62f8216eda62dbc7feacc
 
-PODFILE CHECKSUM: adaf0412b9540fae8715af372fd9060079396dd8
+PODFILE CHECKSUM: 684ce1afe876e20e63187a7f963738a1173dbc0a
 
 COCOAPODS: 1.5.2

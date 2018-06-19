@@ -20,7 +20,7 @@
     return self;
 }
 
-- (void)indexStatus
+- (void)commitWorkingFiles:(GTSignature *)signature
 {
     NSError *error = nil;
     GTIndex *index = [self indexWithError:&error];
@@ -77,8 +77,6 @@
     GTReference *reference = [self headReferenceWithError:&error];
     GTBranch *currentBranch = [self currentBranchWithError:&error];
     GTCommit *latestComit = [currentBranch targetCommitWithError:&error];
-
-    GTSignature *signature = [[GTSignature alloc] initWithName:@"iOS" email:@"iOS@apple.com" time:NSDate.date];
     NSString *strMessage = latestComit ? [NSString stringWithFormat:@"Update at %@", NSDate.date] : @"Initial commit.";
 
     GTCommit *commit = [self createCommitWithTree:tree message:strMessage author:signature committer:signature parents:latestComit ? @[latestComit] : nil updatingReferenceNamed:reference.name error:&error];
@@ -110,10 +108,38 @@
           withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider: provider }
                 error:&error
              progress:^(const git_transfer_progress *stats, BOOL *stop) {
-        DDLogVerbose(@"Receiving objects: %f%% (%d/%d", 1.0 * stats->received_objects / stats->total_objects, stats->received_objects, stats->total_objects);
+        DDLogVerbose(@"Receiving objects: %.2f%% (%d/%d", 100.0 * stats->received_objects / stats->total_objects, stats->received_objects, stats->total_objects);
     }];
 
     DDLogDebug(@"error: %@", error);
+}
+
+- (BOOL)pushToRemote:(GTCredentialProvider *)provider
+{
+    BOOL result = YES;
+    NSError *error = nil;
+    NSArray<NSString *> *remoteNames = [self remoteNamesWithError:&error];
+
+    for (NSString *remoteName in remoteNames) {
+        GTRemote *remote = [GTRemote remoteWithName:remoteName inRepository:self error:&error];
+        GTBranch *branch = [self currentBranchWithError:&error];
+
+        result &= [self pushBranch:branch
+                              toRemote:remote
+                           withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider: provider }
+                                 error:&error
+                              progress:^(unsigned int current, unsigned int total, size_t bytes, BOOL *stop) {
+            if (total > 0) {
+                DDLogVerbose(@"Writing objects: %.2f%% (%d/%d)", 100.0 * current / total, current, total);
+            }
+        }];
+    }
+
+    if (!result) {
+        DDLogError(@"%s, error: %@", __func__, error);
+    }
+
+    return result;
 }
 
 #pragma mark - Private

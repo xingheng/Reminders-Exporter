@@ -11,7 +11,7 @@
 		6816262020A43D9300B155D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6816261F20A43D9300B155D1 /* Assets.xcassets */; };
 		6816262320A43D9300B155D1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6816262120A43D9300B155D1 /* LaunchScreen.storyboard */; };
 		6816262620A43D9300B155D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816262520A43D9300B155D1 /* main.m */; };
-		6816263120A43DE400B155D1 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263020A43DE400B155D1 /* MainViewController.m */; };
+		6816263120A43DE400B155D1 /* RemindersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263020A43DE400B155D1 /* RemindersViewController.m */; };
 		6816263420A441C400B155D1 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6816263320A441C400B155D1 /* EventKit.framework */; };
 		6816263620A441CB00B155D1 /* EventKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6816263520A441CB00B155D1 /* EventKitUI.framework */; };
 		6816263820A5523400B155D1 /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6816263720A5523400B155D1 /* ObjectiveGit.framework */; };
@@ -19,6 +19,9 @@
 		6816263F20A57AAD00B155D1 /* Repo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263E20A57AAD00B155D1 /* Repo.m */; };
 		6816264220A5885800B155D1 /* PathUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816264120A5885800B155D1 /* PathUtility.m */; };
 		68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */; };
+		68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7120D8AEEC002DD326 /* UserPreferences.m */; };
+		68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7420D8BBED002DD326 /* SettingsViewController.m */; };
+		68FD7F7820D904C2002DD326 /* Repo+UserActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7720D904C2002DD326 /* Repo+UserActions.m */; };
 		C46B2ABC4ACE1DC62957E281 /* libPods-Reminders Exporter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */; };
 /* End PBXBuildFile section */
 
@@ -32,8 +35,8 @@
 		6816262220A43D9300B155D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6816262420A43D9300B155D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6816262520A43D9300B155D1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		6816262F20A43DE400B155D1 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
-		6816263020A43DE400B155D1 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		6816262F20A43DE400B155D1 /* RemindersViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemindersViewController.h; sourceTree = "<group>"; };
+		6816263020A43DE400B155D1 /* RemindersViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemindersViewController.m; sourceTree = "<group>"; };
 		6816263320A441C400B155D1 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		6816263520A441CB00B155D1 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
 		6816263720A5523400B155D1 /* ObjectiveGit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjectiveGit.framework; path = Carthage/Build/iOS/ObjectiveGit.framework; sourceTree = "<group>"; };
@@ -46,6 +49,12 @@
 		688B1BCE20A4A2BB00B7558A /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		68FD7F6D20D38DF8002DD326 /* RepositoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RepositoryViewController.h; sourceTree = "<group>"; };
 		68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepositoryViewController.m; sourceTree = "<group>"; };
+		68FD7F7020D8AEEC002DD326 /* UserPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserPreferences.h; sourceTree = "<group>"; };
+		68FD7F7120D8AEEC002DD326 /* UserPreferences.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserPreferences.m; sourceTree = "<group>"; };
+		68FD7F7320D8BBED002DD326 /* SettingsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
+		68FD7F7420D8BBED002DD326 /* SettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
+		68FD7F7620D904C2002DD326 /* Repo+UserActions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Repo+UserActions.h"; sourceTree = "<group>"; };
+		68FD7F7720D904C2002DD326 /* Repo+UserActions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Repo+UserActions.m"; sourceTree = "<group>"; };
 		E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Reminders Exporter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -94,9 +103,9 @@
 		6816261B20A43D9300B155D1 /* Reminders Exporter */ = {
 			isa = PBXGroup;
 			children = (
-				6816262E20A43DD100B155D1 /* Classes */,
 				6816261C20A43D9300B155D1 /* AppDelegate.h */,
 				6816261D20A43D9300B155D1 /* AppDelegate.m */,
+				6816262E20A43DD100B155D1 /* Classes */,
 				6816261F20A43D9300B155D1 /* Assets.xcassets */,
 				6816262120A43D9300B155D1 /* LaunchScreen.storyboard */,
 				6816262420A43D9300B155D1 /* Info.plist */,
@@ -109,16 +118,22 @@
 		6816262E20A43DD100B155D1 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				6816262F20A43DE400B155D1 /* MainViewController.h */,
-				6816263020A43DE400B155D1 /* MainViewController.m */,
+				6816262F20A43DE400B155D1 /* RemindersViewController.h */,
+				6816263020A43DE400B155D1 /* RemindersViewController.m */,
+				68FD7F7320D8BBED002DD326 /* SettingsViewController.h */,
+				68FD7F7420D8BBED002DD326 /* SettingsViewController.m */,
 				68FD7F6D20D38DF8002DD326 /* RepositoryViewController.h */,
 				68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */,
 				6816263A20A573AA00B155D1 /* EKGroup.h */,
 				6816263B20A573AA00B155D1 /* EKGroup.m */,
 				6816263D20A57AAD00B155D1 /* Repo.h */,
 				6816263E20A57AAD00B155D1 /* Repo.m */,
+				68FD7F7620D904C2002DD326 /* Repo+UserActions.h */,
+				68FD7F7720D904C2002DD326 /* Repo+UserActions.m */,
 				6816264020A5885800B155D1 /* PathUtility.h */,
 				6816264120A5885800B155D1 /* PathUtility.m */,
+				68FD7F7020D8AEEC002DD326 /* UserPreferences.h */,
+				68FD7F7120D8AEEC002DD326 /* UserPreferences.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -264,8 +279,11 @@
 				6816263F20A57AAD00B155D1 /* Repo.m in Sources */,
 				6816262620A43D9300B155D1 /* main.m in Sources */,
 				6816263C20A573AA00B155D1 /* EKGroup.m in Sources */,
-				6816263120A43DE400B155D1 /* MainViewController.m in Sources */,
+				68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */,
+				6816263120A43DE400B155D1 /* RemindersViewController.m in Sources */,
 				6816261E20A43D9300B155D1 /* AppDelegate.m in Sources */,
+				68FD7F7820D904C2002DD326 /* Repo+UserActions.m in Sources */,
+				68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */,
 				68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */,
 				6816264220A5885800B155D1 /* PathUtility.m in Sources */,
 			);
@@ -401,7 +419,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$SRCROOT/$PRODUCT_NAME/PrefixHeader.pch";
+				GCC_PREFIX_HEADER = $SRCROOT/$PRODUCT_NAME/PrefixHeader.pch;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -434,7 +452,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$SRCROOT/$PRODUCT_NAME/PrefixHeader.pch";
+				GCC_PREFIX_HEADER = $SRCROOT/$PRODUCT_NAME/PrefixHeader.pch;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",

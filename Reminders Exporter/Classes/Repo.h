@@ -12,8 +12,10 @@
 
 - (instancetype)initWithURL:(NSURL *)localFileURL createIfNotExist:(BOOL)flag error:(NSError *_Nullable __autoreleasing *)error;
 
-- (void)indexStatus;
+- (void)commitWorkingFiles:(GTSignature *)signature;
 
 - (void)fetchRemote:(NSString *)remoteName URL:(NSString *)url credentialProvider:(GTCredentialProvider *)provider;
+
+- (BOOL)pushToRemote:(GTCredentialProvider *)provider;
 
 @end

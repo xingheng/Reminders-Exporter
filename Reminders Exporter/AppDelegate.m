@@ -7,8 +7,10 @@
 //
 
 #import <DSBaseViewController/BaseNavigationController.h>
+#import <DSBaseViewController/BaseTabBarController.h>
 #import "AppDelegate.h"
-#import "MainViewController.h"
+#import "RemindersViewController.h"
+#import "SettingsViewController.h"
 
 @interface AppDelegate ()
 
@@ -16,16 +18,21 @@
 
 @implementation AppDelegate
 
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
     [self setupDDLog];
 
-    MainViewController *mainVC = [MainViewController new];
-    BaseNavigationController *naviVC = [[BaseNavigationController alloc] initWithRootViewController:mainVC];
-    self.window.rootViewController = naviVC;
+    BaseNavigationController *navi1 = [[BaseNavigationController alloc] initWithRootViewController:[RemindersViewController new]];
+    BaseNavigationController *navi2 = [[BaseNavigationController alloc] initWithRootViewController:[SettingsViewController new]];
+    BaseTabBarController *tabBarVC = [BaseTabBarController new];
+
+    navi1.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemFeatured tag:0];
+    navi2.tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemMore tag:0];
+
+    tabBarVC.viewControllers = @[navi1, navi2];
+    self.window.rootViewController = tabBarVC;
 
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
