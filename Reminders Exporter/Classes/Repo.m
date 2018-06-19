@@ -26,7 +26,7 @@
     GTIndex *index = [self indexWithError:&error];
     BOOL hasChanges = NO;
 
-    for (NSString *filepath in  [self allFiles]) {
+    for (NSString *filepath in [self allFiles]) {
         BOOL success;
         GTFileStatusFlags flag = [self statusForFile:filepath success:&success error:&error];
 
@@ -70,7 +70,7 @@
 
     if (!hasChanges) {
         DDLogVerbose(@"Nothing changes.");
-//        return;
+        return;
     }
 
     GTTree *tree = [index writeTreeToRepository:self error:&error];
@@ -81,7 +81,7 @@
     GTSignature *signature = [[GTSignature alloc] initWithName:@"iOS" email:@"iOS@apple.com" time:NSDate.date];
     NSString *strMessage = latestComit ? [NSString stringWithFormat:@"Update at %@", NSDate.date] : @"Initial commit.";
 
-    GTCommit *commit = [self createCommitWithTree:tree message:strMessage author:signature committer:signature parents:@[latestComit] updatingReferenceNamed:reference.name error:&error];
+    GTCommit *commit = [self createCommitWithTree:tree message:strMessage author:signature committer:signature parents:latestComit ? @[latestComit] : nil updatingReferenceNamed:reference.name error:&error];
     DDLogDebug(@"%@", commit);
 
     if (commit) {

@@ -25,6 +25,7 @@
 #import <DSUtility/UIImage+LoadImage.h>
 #import <DSUtility/UIView+ViewHierarchy.h>
 
+#import <HUDHelper/HUDHelper.h>
 
 #define THEME_BLACK_COLOR    RGB(41, 41, 41)
 
