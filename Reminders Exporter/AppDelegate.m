@@ -11,6 +11,9 @@
 #import "AppDelegate.h"
 #import "RemindersViewController.h"
 #import "SettingsViewController.h"
+#import "EKGroup+Reminders.h"
+#import "Repo+Reminders.h"
+#import "Repo+UserActions.h"
 
 @interface AppDelegate ()
 
@@ -22,6 +25,7 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
+    [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     [self setupDDLog];
 
     BaseNavigationController *navi1 = [[BaseNavigationController alloc] initWithRootViewController:[RemindersViewController new]];
@@ -64,6 +68,16 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+#pragma mark - Background Fetch
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    [EKGroup fetchRemindersToRepo:Repo.reminderRepo
+                       completion:^(BOOL result, NSArray<EKGroup *> *groups) {
+           completionHandler(result ? UIBackgroundFetchResultNewData : UIBackgroundFetchResultNoData);
+    }];
 }
 
 #pragma mark - Private

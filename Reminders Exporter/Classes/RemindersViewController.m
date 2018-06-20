@@ -67,7 +67,7 @@
     @weakify(self);
 
     [EKGroup fetchRemindersToRepo:self.repository
-                       completion:^(NSArray<EKGroup *> *groups) {
+                       completion:^(BOOL result, NSArray<EKGroup *> *groups) {
         @strongify(self);
         self.tableView.dataItems = groups;
 

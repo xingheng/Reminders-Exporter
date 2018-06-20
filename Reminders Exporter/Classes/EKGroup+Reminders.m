@@ -46,9 +46,11 @@
     }];
 }
 
-+ (void)fetchRemindersToRepo:(Repo *)repository completion:(void (^)(NSArray<EKGroup *> *))completion
++ (void)fetchRemindersToRepo:(Repo *)repository completion:(void (^)(BOOL, NSArray<EKGroup *> *))completion
 {
     [self fetchReminders:^(NSArray<EKGroup *> *groups) {
+        BOOL result = NO;
+
         if (repository) {
             NSURL *repoURL = repository.fileURL;
 
@@ -61,16 +63,16 @@
             DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
 
             if ([repository commitWorkingFiles]) {
-                [repository pushToRemotes];
+                result = [repository pushToRemotes];
             }
         }
 
         if (completion) {
             if ([NSThread isMainThread]) {
-                completion(groups);
+                completion(result, groups);
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(groups);
+                    completion(result, groups);
                 });
             }
         }

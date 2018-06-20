@@ -14,6 +14,6 @@
 
 + (void)fetchReminders:(void (^)(NSArray<EKGroup *> *))completion;
 
-+ (void)fetchRemindersToRepo:(Repo *)repository completion:(void (^)(NSArray<EKGroup *> *))completion;
++ (void)fetchRemindersToRepo:(Repo *)repository completion:(void (^)(BOOL, NSArray<EKGroup *> *))completion;
 
 @end
