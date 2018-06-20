@@ -6,6 +6,7 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
+#import <DSUtility/UIImage+ColorHelper.h>
 #import "RemindersTableView.h"
 
 #define kRemindersTableCellID @"RemindersTableCellID"
@@ -22,7 +23,7 @@
         self.dataSource = self;
         self.delegate = self;
 
-        self.rowHeight = 50;
+        self.rowHeight = 46;
         self.refreshControl = [UIRefreshControl new];
         [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
 
@@ -58,16 +59,6 @@
     return self.dataItems.count;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    return self.dataItems[section].calendar.title;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
-    return nil;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return self.dataItems[section].reminders.count;
@@ -78,6 +69,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kRemindersTableCellID];
     EKReminder *reminder = self.dataItems[indexPath.section].reminders[indexPath.row];
 
+    cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.textLabel.text = reminder.title;
 
     return cell;
@@ -88,6 +80,38 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *header = [UIView new];
+    UIImageView *imageView = [UIImageView new];
+    UILabel *label = [UILabel new];
+
+    EKCalendar *calendar = self.dataItems[section].calendar;
+    CGFloat radius = 16;
+
+    imageView.clipsToBounds = YES;
+    imageView.layer.cornerRadius = radius / 2;
+    imageView.image = [UIImage imageWithColor:[UIColor colorWithCGColor:calendar.CGColor]];
+    label.text = calendar.title;
+    label.textColor = RGB(40, 40, 40);
+    label.font = [UIFont boldSystemFontOfSize:23];
+    [header addSubviews:imageView, label, nil];
+
+    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(header.left).offset(10);
+        make.centerY.equalTo(label.centerY);
+        make.width.height.equalTo(@(radius));
+    }];
+
+    [label mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(imageView.right).offset(8);
+        make.top.bottom.right.equalTo(header);
+        make.height.equalTo(@50);
+    }];
+
+    return header;
 }
 
 @end
