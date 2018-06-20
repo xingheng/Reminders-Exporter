@@ -11,6 +11,51 @@
 
 #define kRemindersTableCellID @"RemindersTableCellID"
 
+#pragma mark - Functions
+
+NSString * GetTimeDistance(NSDate *date1, NSDate *date2)
+{
+    if (!(date1 && date2)) {
+        return nil;
+    }
+
+    NSTimeInterval interval = fabs(date1.timeIntervalSince1970 - date2.timeIntervalSince1970);
+
+    if (interval < 60) {
+        return [NSString stringWithFormat:@"%.0f second(s)", interval];
+    } else if (interval < 60 * 60) {
+        return [NSString stringWithFormat:@"%.0f minute(s)", interval  / 60];
+    } else if (interval < 60 * 60 * 24) {
+        return [NSString stringWithFormat:@"%.0f hour(s)", interval  / 60 / 60];
+    } else if (interval < 60 * 60 * 24 * 30) {
+        return [NSString stringWithFormat:@"%.0f day(s)", interval  / 60 / 60 / 24];
+    } else if (interval < 60 * 60 * 24 * 30 * 12) {
+        return [NSString stringWithFormat:@"%.0f month(s)", interval  / 60 / 60 / 24 / 30];
+    } else {
+        return [NSString stringWithFormat:@"%.0f year(s)", interval  / 60 / 60 / 24 / 30 / 12];
+    }
+}
+
+#pragma mark - RemindersTableViewCell
+
+@interface RemindersTableViewCell : UITableViewCell
+
+@end
+
+@implementation RemindersTableViewCell
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:reuseIdentifier]) {
+    }
+
+    return self;
+}
+
+@end
+
+#pragma mark - RemindersTableView
+
 @interface RemindersTableView () <UITableViewDataSource, UITableViewDelegate>
 
 @end
@@ -27,7 +72,7 @@
         self.refreshControl = [UIRefreshControl new];
         [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
 
-        [self registerClass:[UITableViewCell class] forCellReuseIdentifier:kRemindersTableCellID];
+        [self registerClass:[RemindersTableViewCell class] forCellReuseIdentifier:kRemindersTableCellID];
     }
 
     return self;
@@ -66,20 +111,26 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kRemindersTableCellID];
+    RemindersTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kRemindersTableCellID];
     EKReminder *reminder = self.dataItems[indexPath.section].reminders[indexPath.row];
 
     cell.textLabel.font = [UIFont systemFontOfSize:14];
     cell.textLabel.text = reminder.title;
+
+    if (reminder.hasAlarms) {
+        EKAlarm *alarm = reminder.alarms.firstObject;
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ later", GetTimeDistance(alarm.absoluteDate, NSDate.date)];
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:12];
+    }
 
     return cell;
 }
 
 #pragma mark - UITableViewDelegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    return NO;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section

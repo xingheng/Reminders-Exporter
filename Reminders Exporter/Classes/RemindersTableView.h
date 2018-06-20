@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "EKGroup.h"
 
+NSString * GetTimeDistance(NSDate *date1, NSDate *date2);
+
+
 @interface RemindersTableView : UITableView
 
 @property (nonatomic, strong) NSArray<EKGroup *> *dataItems;

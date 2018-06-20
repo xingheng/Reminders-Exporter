@@ -15,26 +15,6 @@
 #import "UserPreferences.h"
 #import "RemindersTableView.h"
 
-#pragma mark - Functions
-
-static NSString * GetTimeDistance(NSDate *date1, NSDate *date2)
-{
-    NSTimeInterval interval = fabs(date1.timeIntervalSince1970 - date2.timeIntervalSince1970);
-
-    if (interval < 60) {
-        return [NSString stringWithFormat:@"%.0f second(s) ago", interval];
-    } else if (interval < 60 * 60) {
-        return [NSString stringWithFormat:@"%.0f minute(s) ago", interval  / 60];
-    } else if (interval < 60 * 60 * 24) {
-        return [NSString stringWithFormat:@"%.0f hour(s) ago", interval  / 60 / 60];
-    } else if (interval < 60 * 60 * 24 * 30) {
-        return [NSString stringWithFormat:@"%.0f day(s) ago", interval  / 60 / 60 / 24];
-    } else if (interval < 60 * 60 * 24 * 30 * 12) {
-        return [NSString stringWithFormat:@"%.0f month(s) ago", interval  / 60 / 60 / 24 / 30];
-    } else {
-        return [NSString stringWithFormat:@"%.0f year(s) ago", interval  / 60 / 60 / 24 / 30 / 12];
-    }
-}
 
 #pragma mark - RemindersViewController
 
@@ -164,7 +144,7 @@ static NSString * GetTimeDistance(NSDate *date1, NSDate *date2)
     tableView.refreshBlock = ^void (UIRefreshControl *refreshControl) {
         @strongify(self);
 
-        NSString *title = [NSString stringWithFormat:@"Last Updated At %@", GetTimeDistance(GetLastUpdateDate(), NSDate.date)];
+        NSString *title = [NSString stringWithFormat:@"Last Updated at %@ ago", GetTimeDistance(GetLastUpdateDate(), NSDate.date)];
         refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title ? : @"" attributes:@{ NSForegroundColorAttributeName: [UIColor grayColor] }];
 
         [self _fetchReminders:^{
