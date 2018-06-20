@@ -20,7 +20,7 @@
     return self;
 }
 
-- (void)commitWorkingFiles:(GTSignature *)signature
+- (BOOL)commitWorkingFiles:(GTSignature *)signature
 {
     NSError *error = nil;
     GTIndex *index = [self indexWithError:&error];
@@ -70,7 +70,7 @@
 
     if (!hasChanges) {
         DDLogVerbose(@"Nothing changes.");
-        return;
+        return NO;
     }
 
     GTTree *tree = [index writeTreeToRepository:self error:&error];
@@ -85,6 +85,8 @@
     if (commit) {
         [self resetToCommit:commit resetType:GTRepositoryResetTypeHard error:&error];
     }
+
+    return YES;
 }
 
 - (void)fetchRemote:(NSString *)remoteName URL:(NSString *)url credentialProvider:(GTCredentialProvider *)provider
@@ -118,6 +120,7 @@
 {
     BOOL result = YES;
     NSError *error = nil;
+
     NSArray<NSString *> *remoteNames = [self remoteNamesWithError:&error];
 
     for (NSString *remoteName in remoteNames) {
@@ -125,10 +128,10 @@
         GTBranch *branch = [self currentBranchWithError:&error];
 
         result &= [self pushBranch:branch
-                              toRemote:remote
-                           withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider: provider }
-                                 error:&error
-                              progress:^(unsigned int current, unsigned int total, size_t bytes, BOOL *stop) {
+                          toRemote:remote
+                       withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider: provider }
+                             error:&error
+                          progress:^(unsigned int current, unsigned int total, size_t bytes, BOOL *stop) {
             if (total > 0) {
                 DDLogVerbose(@"Writing objects: %.2f%% (%d/%d)", 100.0 * current / total, current, total);
             }

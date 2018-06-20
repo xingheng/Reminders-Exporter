@@ -19,8 +19,10 @@ NSString *const CredentialKeyPassword = @"Password";
 
 #define UserKey(__KEY__) @"Exporter." #__KEY__
 
-#define kSTRKey_Signature   UserKey(Signature)
-#define kSTRKey_Credentials UserKey(Credentials)
+#define kSTRKey_Signature      UserKey(Signature)
+#define kSTRKey_Credentials    UserKey(Credentials)
+#define kSTRKey_LastUpdateDate UserKey(LastUpdateDate)
+
 
 NSDictionary * GetSignature(void)
 {
@@ -33,7 +35,7 @@ NSDictionary * GetSignature(void)
                    SignatureEmail: @"steve@apple.com"
 #else
                    SignatureUsername: @"iOS",
-                   SignatureEmail: @""
+                   SignatureEmail: @"ios@apple.com"
 #endif
         };
     }
@@ -54,4 +56,16 @@ NSDictionary * GetCredentials(void)
 void SetCredentials(NSDictionary *values)
 {
     SetUserDefaultObject(kSTRKey_Credentials, values);
+}
+
+NSDate * GetLastUpdateDate(void)
+{
+    NSTimeInterval interval = [UserDefaultObject(kSTRKey_LastUpdateDate) doubleValue];
+
+    return interval > 0 ? [NSDate dateWithTimeIntervalSince1970:interval] : nil;
+}
+
+void SetLastUpdateDate(NSDate *value)
+{
+    SetUserDefaultObject(kSTRKey_LastUpdateDate, @(value.timeIntervalSince1970));
 }

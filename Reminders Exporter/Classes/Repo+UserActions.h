@@ -10,7 +10,7 @@
 
 @interface Repo (UserActions)
 
-- (void)commitWorkingFiles;
+- (BOOL)commitWorkingFiles;
 
 - (BOOL)pushToRemotes;
 

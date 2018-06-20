@@ -248,6 +248,10 @@
             NSString *strUsername = [textItemUsername.value trimEmptySpace];
             NSString *strPassword = textItemPassword.value;
 
+            if (strSite.length <= 0) {
+                return;
+            }
+
             NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
 
             [credentialDict setValue:@{ CredentialKeyUsername: strUsername,

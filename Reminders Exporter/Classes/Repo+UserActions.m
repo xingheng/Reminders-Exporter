@@ -11,14 +11,14 @@
 
 @implementation Repo (UserActions)
 
-- (void)commitWorkingFiles
+- (BOOL)commitWorkingFiles
 {
     NSDictionary *dict = GetSignature();
     GTSignature *signature = [[GTSignature alloc] initWithName:dict[SignatureUsername]
                                                          email:dict[SignatureEmail]
                                                           time:NSDate.date];
 
-    [self commitWorkingFiles:signature];
+    return [self commitWorkingFiles:signature];
 }
 
 - (BOOL)pushToRemotes

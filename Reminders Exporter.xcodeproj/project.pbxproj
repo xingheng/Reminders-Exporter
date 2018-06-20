@@ -22,6 +22,7 @@
 		68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7120D8AEEC002DD326 /* UserPreferences.m */; };
 		68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7420D8BBED002DD326 /* SettingsViewController.m */; };
 		68FD7F7820D904C2002DD326 /* Repo+UserActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7720D904C2002DD326 /* Repo+UserActions.m */; };
+		68FD7F7B20D9FAF3002DD326 /* RemindersTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7A20D9FAF3002DD326 /* RemindersTableView.m */; };
 		C46B2ABC4ACE1DC62957E281 /* libPods-Reminders Exporter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */; };
 /* End PBXBuildFile section */
 
@@ -55,6 +56,8 @@
 		68FD7F7420D8BBED002DD326 /* SettingsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
 		68FD7F7620D904C2002DD326 /* Repo+UserActions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Repo+UserActions.h"; sourceTree = "<group>"; };
 		68FD7F7720D904C2002DD326 /* Repo+UserActions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Repo+UserActions.m"; sourceTree = "<group>"; };
+		68FD7F7920D9FAF3002DD326 /* RemindersTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemindersTableView.h; sourceTree = "<group>"; };
+		68FD7F7A20D9FAF3002DD326 /* RemindersTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemindersTableView.m; sourceTree = "<group>"; };
 		E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Reminders Exporter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -120,6 +123,8 @@
 			children = (
 				6816262F20A43DE400B155D1 /* RemindersViewController.h */,
 				6816263020A43DE400B155D1 /* RemindersViewController.m */,
+				68FD7F7920D9FAF3002DD326 /* RemindersTableView.h */,
+				68FD7F7A20D9FAF3002DD326 /* RemindersTableView.m */,
 				68FD7F7320D8BBED002DD326 /* SettingsViewController.h */,
 				68FD7F7420D8BBED002DD326 /* SettingsViewController.m */,
 				68FD7F6D20D38DF8002DD326 /* RepositoryViewController.h */,
@@ -283,6 +288,7 @@
 				6816263120A43DE400B155D1 /* RemindersViewController.m in Sources */,
 				6816261E20A43D9300B155D1 /* AppDelegate.m in Sources */,
 				68FD7F7820D904C2002DD326 /* Repo+UserActions.m in Sources */,
+				68FD7F7B20D9FAF3002DD326 /* RemindersTableView.m in Sources */,
 				68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */,
 				68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */,
 				6816264220A5885800B155D1 /* PathUtility.m in Sources */,
@@ -432,7 +438,7 @@
 					"$(SRCROOT)/Carthage/Build/iOS/ObjectiveGit.framework/Headers/",
 				);
 				INFOPLIST_FILE = "Reminders Exporter/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.willhan.Reminders-Exporter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -465,7 +471,7 @@
 					"$(SRCROOT)/Carthage/Build/iOS/ObjectiveGit.framework/Headers/",
 				);
 				INFOPLIST_FILE = "Reminders Exporter/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.willhan.Reminders-Exporter";
 				PRODUCT_NAME = "$(TARGET_NAME)";

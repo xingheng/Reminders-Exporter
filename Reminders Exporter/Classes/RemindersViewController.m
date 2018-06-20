@@ -13,12 +13,37 @@
 #import "PathUtility.h"
 #import "Repo+UserActions.h"
 #import "UserPreferences.h"
+#import "RemindersTableView.h"
+
+#pragma mark - Functions
+
+static NSString * GetTimeDistance(NSDate *date1, NSDate *date2)
+{
+    NSTimeInterval interval = fabs(date1.timeIntervalSince1970 - date2.timeIntervalSince1970);
+
+    if (interval < 60) {
+        return [NSString stringWithFormat:@"%.0f second(s) ago", interval];
+    } else if (interval < 60 * 60) {
+        return [NSString stringWithFormat:@"%.0f minute(s) ago", interval  / 60];
+    } else if (interval < 60 * 60 * 24) {
+        return [NSString stringWithFormat:@"%.0f hour(s) ago", interval  / 60 / 60];
+    } else if (interval < 60 * 60 * 24 * 30) {
+        return [NSString stringWithFormat:@"%.0f day(s) ago", interval  / 60 / 60 / 24];
+    } else if (interval < 60 * 60 * 24 * 30 * 12) {
+        return [NSString stringWithFormat:@"%.0f month(s) ago", interval  / 60 / 60 / 24 / 30];
+    } else {
+        return [NSString stringWithFormat:@"%.0f year(s) ago", interval  / 60 / 60 / 24 / 30 / 12];
+    }
+}
+
+#pragma mark - RemindersViewController
 
 @interface RemindersViewController ()
 
 @property (nonatomic, strong) EKEventStore *store;
-
 @property (nonatomic, strong) Repo *repository;
+
+@property (nonatomic, strong) RemindersTableView *tableView;
 
 @end
 
@@ -30,7 +55,7 @@
 
     self.title = @"Reminders";
     self.view.backgroundColor = [UIColor whiteColor];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(rightBarButtonTapped:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(editBarButtonTapped:)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -68,7 +93,7 @@
 
 #pragma mark - Actions
 
-- (void)rightBarButtonTapped:(id)sender
+- (void)editBarButtonTapped:(id)sender
 {
     RepositoryViewController *repoVC = [RepositoryViewController new];
 
@@ -78,14 +103,18 @@
 
 #pragma mark - Private
 
-- (void)_fetchReminders
+- (void)_fetchReminders:(void (^)(void))completion
 {
     DDLogVerbose(@"Fetching reminders...");
     NSPredicate *predicate = [self.store predicateForIncompleteRemindersWithDueDateStarting:nil ending:nil calendars:nil];
 
+    @weakify(self);
+
     [self.store fetchRemindersMatchingPredicate:predicate
                                      completion:^(NSArray *reminders) {
+        @strongify(self);
         DDLogVerbose(@"Finish fetching...");
+
         NSMutableArray<EKGroup *> *groups = [NSMutableArray new];
 
         for (EKReminder *reminder in reminders) {
@@ -101,6 +130,9 @@
             [group addReminder:reminder];
         }
 
+        self.tableView.dataItems = groups;
+        SetLastUpdateDate(NSDate.date);
+
         NSURL *repoURL = self.repository.fileURL;
 
         for (EKGroup *group in groups) {
@@ -110,8 +142,14 @@
         }
 
         DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
-        [self.repository commitWorkingFiles];
-        [self.repository pushToRemotes];
+
+        if ([self.repository commitWorkingFiles]) {
+            [self.repository pushToRemotes];
+        }
+
+        if (completion) {
+            completion();
+        }
     }];
 }
 
@@ -119,6 +157,29 @@
 
 - (void)buildSubview:(UIView *)containerView controller:(BaseViewController *)viewController
 {
+    RemindersTableView *tableView = [RemindersTableView new];
+
+    @weakify(self);
+
+    tableView.refreshBlock = ^void (UIRefreshControl *refreshControl) {
+        @strongify(self);
+
+        NSString *title = [NSString stringWithFormat:@"Last Updated At %@", GetTimeDistance(GetLastUpdateDate(), NSDate.date)];
+        refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:title ? : @"" attributes:@{ NSForegroundColorAttributeName: [UIColor grayColor] }];
+
+        [self _fetchReminders:^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [refreshControl endRefreshing];
+            });
+        }];
+    };
+
+    self.tableView = tableView;
+    [containerView addSubview:tableView];
+
+    [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(containerView);
+    }];
 }
 
 - (void)loadDataForController:(BaseViewController *)viewController
@@ -126,7 +187,7 @@
     switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder]) {
         case EKAuthorizationStatusAuthorized:
             DDLogDebug(@"Authorized!");
-            [self _fetchReminders];
+            [self _fetchReminders:nil];
             break;
 
         case EKAuthorizationStatusDenied:
@@ -140,7 +201,7 @@
             [self.store requestAccessToEntityType:EKEntityTypeReminder
                                        completion:^(BOOL granted, NSError *error) {
             if (granted) {
-                [self _fetchReminders];
+                [self _fetchReminders:nil];
             } else {
                 DDLogError(@"%s: %@", __func__, error);
             }
