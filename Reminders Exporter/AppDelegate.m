@@ -5,7 +5,7 @@
 //  Created by WeiHan on 10/05/2018.
 //  Copyright © 2018 WillHan. All rights reserved.
 //
-
+#import <UserNotifications/UserNotifications.h>
 #import <DSBaseViewController/BaseNavigationController.h>
 #import <DSBaseViewController/BaseTabBarController.h>
 #import "AppDelegate.h"
@@ -27,6 +27,15 @@
 
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     [self setupDDLog];
+
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound;
+    [center requestAuthorizationWithOptions:options
+                          completionHandler:^(BOOL granted, NSError *_Nullable error) {
+        if (!granted) {
+            DDLogError(@"Something went wrong");
+        }
+    }];
 
     BaseNavigationController *navi1 = [[BaseNavigationController alloc] initWithRootViewController:[RemindersViewController new]];
     BaseNavigationController *navi2 = [[BaseNavigationController alloc] initWithRootViewController:[SettingsViewController new]];
@@ -76,7 +85,33 @@
 {
     [EKGroup fetchRemindersToRepo:Repo.reminderRepo
                        completion:^(BOOL result, NSArray<EKGroup *> *groups) {
-           completionHandler(result ? UIBackgroundFetchResultNewData : UIBackgroundFetchResultNoData);
+#if DEBUG
+        UNUserNotificationCenter * center = [UNUserNotificationCenter currentNotificationCenter];
+        [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
+            if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+                UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+                content.title = @"Updated";
+                content.body = [NSDate.date descriptionWithLocale:NSLocale.currentLocale];
+                content.sound = [UNNotificationSound defaultSound];
+
+                UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1
+                                                                                                                repeats:NO];
+                NSString *identifier = @"UYLLocalNotification";
+                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
+                                                                                      content:content
+                                                                                      trigger:trigger];
+
+                [center addNotificationRequest:request
+                         withCompletionHandler:^(NSError *_Nullable error) {
+                    if (error != nil) {
+                        DDLogError(@"Something went wrong: %@", error);
+                    }
+                }];
+            }
+        }];
+#endif /* if DEBUG */
+        DDLogVerbose(@"Updated %@", [NSDate.date descriptionWithLocale:NSLocale.currentLocale]);
+        completionHandler(result ? UIBackgroundFetchResultNewData : UIBackgroundFetchResultNoData);
     }];
 }
 
