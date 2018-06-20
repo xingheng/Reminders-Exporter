@@ -6,12 +6,12 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
-#import <EventKit/EventKit.h>
+#import <DSUtility/UIControl+BlockAction.h>
 #import "RemindersViewController.h"
 #import "RepositoryViewController.h"
-#import "EKGroup.h"
-#import "PathUtility.h"
+#import "EKGroup+Reminders.h"
 #import "Repo+UserActions.h"
+#import "Repo+Reminders.h"
 #import "UserPreferences.h"
 #import "RemindersTableView.h"
 
@@ -20,8 +20,7 @@
 
 @interface RemindersViewController ()
 
-@property (nonatomic, strong) EKEventStore *store;
-@property (nonatomic, strong) Repo *repository;
+@property (nonatomic, strong, readonly) Repo *repository;
 
 @property (nonatomic, strong) RemindersTableView *tableView;
 
@@ -46,29 +45,9 @@
 
 #pragma mark - Property
 
-- (EKEventStore *)store
-{
-    if (!_store) {
-        _store = [EKEventStore new];
-    }
-
-    return _store;
-}
-
 - (Repo *)repository
 {
-    if (!_repository) {
-        NSError *error = nil;
-        _repository = [[Repo alloc] initWithURL:GetReminderRepoRootDirectoryPath()
-                               createIfNotExist:YES
-                                          error:&error];
-
-        if (error) {
-            DDLogError(@"Initialize the repo failed with error: %@", error.localizedDescription);
-        }
-    }
-
-    return _repository;
+    return [Repo reminderRepo];
 }
 
 #pragma mark - Actions
@@ -85,47 +64,12 @@
 
 - (void)_fetchReminders:(void (^)(void))completion
 {
-    DDLogVerbose(@"Fetching reminders...");
-    NSPredicate *predicate = [self.store predicateForIncompleteRemindersWithDueDateStarting:nil ending:nil calendars:nil];
-
     @weakify(self);
 
-    [self.store fetchRemindersMatchingPredicate:predicate
-                                     completion:^(NSArray *reminders) {
+    [EKGroup fetchRemindersToRepo:self.repository
+                       completion:^(NSArray<EKGroup *> *groups) {
         @strongify(self);
-        DDLogVerbose(@"Finish fetching...");
-
-        NSMutableArray<EKGroup *> *groups = [NSMutableArray new];
-
-        for (EKReminder *reminder in reminders) {
-            EKGroup *group = [groups bk_match:^BOOL (EKGroup *obj) {
-                return [obj.calendar.calendarIdentifier isEqualToString:reminder.calendar.calendarIdentifier];
-            }];
-
-            if (!group) {
-                group = [[EKGroup alloc] initWithCalendar:reminder.calendar];
-                [groups addObject:group];
-            }
-
-            [group addReminder:reminder];
-        }
-
         self.tableView.dataItems = groups;
-        SetLastUpdateDate(NSDate.date);
-
-        NSURL *repoURL = self.repository.fileURL;
-
-        for (EKGroup *group in groups) {
-            if (![group serializeToFile:repoURL]) {
-                NSAssert(NO, @"Fatal!");
-            }
-        }
-
-        DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
-
-        if ([self.repository commitWorkingFiles]) {
-            [self.repository pushToRemotes];
-        }
 
         if (completion) {
             completion();
@@ -171,15 +115,34 @@
             break;
 
         case EKAuthorizationStatusDenied:
-        case EKAuthorizationStatusRestricted:
+        case EKAuthorizationStatusRestricted: {
             DDLogError(@"Failed!");
+            HUDIndicator(self.view).title(@"Failed to access the reminders data.")
+            .subTitle(@"Go to the setting page to check it.")
+            .actionButton(^(UIButton *button) {
+                [button setTitle:@"OK" forState:UIControlStateNormal];
+                [button addEventBlock:^(id sender) {
+                    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                    UIApplication *application = [UIApplication sharedApplication];
+
+                    if ([application canOpenURL:url]) {
+                        [application  openURL:url
+                                      options:@{}
+                            completionHandler:^(BOOL success) {
+                            HUDHide(self.view);
+                        }];
+                    }
+                }
+                     forControlEvents:UIControlEventTouchUpInside];
+            }).show();
             break;
+        }
 
         case EKAuthorizationStatusNotDetermined:
             DDLogDebug(@"Not Yet!");
 
-            [self.store requestAccessToEntityType:EKEntityTypeReminder
-                                       completion:^(BOOL granted, NSError *error) {
+            [EKEventStore.new requestAccessToEntityType:EKEntityTypeReminder
+                                             completion:^(BOOL granted, NSError *error) {
             if (granted) {
                 [self _fetchReminders:nil];
             } else {

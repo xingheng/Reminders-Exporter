@@ -23,6 +23,8 @@
 		68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7420D8BBED002DD326 /* SettingsViewController.m */; };
 		68FD7F7820D904C2002DD326 /* Repo+UserActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7720D904C2002DD326 /* Repo+UserActions.m */; };
 		68FD7F7B20D9FAF3002DD326 /* RemindersTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7A20D9FAF3002DD326 /* RemindersTableView.m */; };
+		68FD7F7E20DA4031002DD326 /* EKGroup+Reminders.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7D20DA4030002DD326 /* EKGroup+Reminders.m */; };
+		68FD7F8120DA4813002DD326 /* Repo+Reminders.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F8020DA4813002DD326 /* Repo+Reminders.m */; };
 		C46B2ABC4ACE1DC62957E281 /* libPods-Reminders Exporter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */; };
 /* End PBXBuildFile section */
 
@@ -58,6 +60,10 @@
 		68FD7F7720D904C2002DD326 /* Repo+UserActions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Repo+UserActions.m"; sourceTree = "<group>"; };
 		68FD7F7920D9FAF3002DD326 /* RemindersTableView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemindersTableView.h; sourceTree = "<group>"; };
 		68FD7F7A20D9FAF3002DD326 /* RemindersTableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemindersTableView.m; sourceTree = "<group>"; };
+		68FD7F7C20DA4030002DD326 /* EKGroup+Reminders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EKGroup+Reminders.h"; sourceTree = "<group>"; };
+		68FD7F7D20DA4030002DD326 /* EKGroup+Reminders.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "EKGroup+Reminders.m"; sourceTree = "<group>"; };
+		68FD7F7F20DA4813002DD326 /* Repo+Reminders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Repo+Reminders.h"; sourceTree = "<group>"; };
+		68FD7F8020DA4813002DD326 /* Repo+Reminders.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "Repo+Reminders.m"; sourceTree = "<group>"; };
 		E308F2A02C6789A0A6DE8216 /* libPods-Reminders Exporter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Reminders Exporter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -131,8 +137,12 @@
 				68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */,
 				6816263A20A573AA00B155D1 /* EKGroup.h */,
 				6816263B20A573AA00B155D1 /* EKGroup.m */,
+				68FD7F7C20DA4030002DD326 /* EKGroup+Reminders.h */,
+				68FD7F7D20DA4030002DD326 /* EKGroup+Reminders.m */,
 				6816263D20A57AAD00B155D1 /* Repo.h */,
 				6816263E20A57AAD00B155D1 /* Repo.m */,
+				68FD7F7F20DA4813002DD326 /* Repo+Reminders.h */,
+				68FD7F8020DA4813002DD326 /* Repo+Reminders.m */,
 				68FD7F7620D904C2002DD326 /* Repo+UserActions.h */,
 				68FD7F7720D904C2002DD326 /* Repo+UserActions.m */,
 				6816264020A5885800B155D1 /* PathUtility.h */,
@@ -281,8 +291,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68FD7F7E20DA4031002DD326 /* EKGroup+Reminders.m in Sources */,
 				6816263F20A57AAD00B155D1 /* Repo.m in Sources */,
 				6816262620A43D9300B155D1 /* main.m in Sources */,
+				68FD7F8120DA4813002DD326 /* Repo+Reminders.m in Sources */,
 				6816263C20A573AA00B155D1 /* EKGroup.m in Sources */,
 				68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */,
 				6816263120A43DE400B155D1 /* RemindersViewController.m in Sources */,
