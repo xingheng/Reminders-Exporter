@@ -34,7 +34,11 @@
 
     self.title = @"Reminders";
     self.view.backgroundColor = [UIColor whiteColor];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRewind target:self action:@selector(rewindBarButtonTapped:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize target:self action:@selector(editBarButtonTapped:)];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadDataForController:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadDataForController:) name:UIApplicationSignificantTimeChangeNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -51,6 +55,11 @@
 }
 
 #pragma mark - Actions
+
+- (void)rewindBarButtonTapped:(id)sender
+{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"x-apple-reminder://"] options:@{} completionHandler:nil];
+}
 
 - (void)editBarButtonTapped:(id)sender
 {
@@ -159,7 +168,7 @@
 
 - (BOOL)shouldInvalidateDataForController:(BaseViewController *)viewController
 {
-    return NO;
+    return YES;
 }
 
 @end
