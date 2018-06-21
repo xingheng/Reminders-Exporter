@@ -18,6 +18,7 @@
 		6816263C20A573AA00B155D1 /* EKGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263B20A573AA00B155D1 /* EKGroup.m */; };
 		6816263F20A57AAD00B155D1 /* Repo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263E20A57AAD00B155D1 /* Repo.m */; };
 		6816264220A5885800B155D1 /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816264120A5885800B155D1 /* Utility.m */; };
+		68B6163720DB9D32007E6A5F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 68B6163620DB9D32007E6A5F /* CoreLocation.framework */; };
 		68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */; };
 		68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7120D8AEEC002DD326 /* UserPreferences.m */; };
 		68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7420D8BBED002DD326 /* SettingsViewController.m */; };
@@ -50,6 +51,7 @@
 		6816264020A5885800B155D1 /* Utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
 		6816264120A5885800B155D1 /* Utility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };
 		688B1BCE20A4A2BB00B7558A /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
+		68B6163620DB9D32007E6A5F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		68FD7F6D20D38DF8002DD326 /* RepositoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RepositoryViewController.h; sourceTree = "<group>"; };
 		68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepositoryViewController.m; sourceTree = "<group>"; };
 		68FD7F7020D8AEEC002DD326 /* UserPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserPreferences.h; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68B6163720DB9D32007E6A5F /* CoreLocation.framework in Frameworks */,
 				6816263820A5523400B155D1 /* ObjectiveGit.framework in Frameworks */,
 				6816263620A441CB00B155D1 /* EventKitUI.framework in Frameworks */,
 				6816263420A441C400B155D1 /* EventKit.framework in Frameworks */,
@@ -156,6 +159,7 @@
 		6816263220A441C400B155D1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				68B6163620DB9D32007E6A5F /* CoreLocation.framework */,
 				6816263720A5523400B155D1 /* ObjectiveGit.framework */,
 				6816263520A441CB00B155D1 /* EventKitUI.framework */,
 				6816263320A441C400B155D1 /* EventKit.framework */,

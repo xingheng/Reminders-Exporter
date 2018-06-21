@@ -12,6 +12,18 @@
 #import "SettingsViewController.h"
 #import "UserPreferences.h"
 
+#pragma mark - Functions
+
+void OpenAppSettings(void (^completion)(BOOL success))
+{
+    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    UIApplication *application = [UIApplication sharedApplication];
+
+    if ([application canOpenURL:url]) {
+        [application openURL:url options:@{} completionHandler:completion];
+    }
+}
+
 @interface SettingsViewController () <RETableViewManagerDelegate>
 
 @property (nonatomic, strong) RETableViewManager *tableManager;
@@ -115,13 +127,38 @@
     section = [RETableViewSection sectionWithHeaderTitle:strHeader footerTitle:@"Notes: The credential you filled will be saved to local storage ONLY without any encryptions, please keep it in safe by yourself for the app sandbox!"];
 
     if (section) {
-        RETableViewItem *item = [RETableViewItem itemWithTitle:@"Add"
+        RETableViewItem *item = [RETableViewItem itemWithTitle:@"Add a New Credential"
                                                  accessoryType:UITableViewCellAccessoryNone
                                               selectionHandler:^(RETableViewItem *item) {
             @strongify(self);
             [item deselectRowAnimated:YES];
             self.showReservedNewCredential = YES;
             [self _reloadTable];
+        }];
+        item.style = UITableViewCellStyleDefault;
+        item.textAlignment = NSTextAlignmentCenter;
+        [section addItem:item];
+
+        [self.tableManager addSection:section];
+    }
+
+    section = [RETableViewSection section];
+
+    if (section) {
+        RETableViewItem *item = [RETableViewItem itemWithTitle:@"Preferences"
+                                                 accessoryType:UITableViewCellAccessoryNone
+                                              selectionHandler:^(RETableViewItem *item) {
+            [item deselectRowAnimated:YES];
+            OpenAppSettings(nil);
+        }];
+        item.style = UITableViewCellStyleDefault;
+        item.textAlignment = NSTextAlignmentCenter;
+        [section addItem:item];
+
+        item = [RETableViewItem itemWithTitle:@"About"
+                                accessoryType:UITableViewCellAccessoryNone
+                             selectionHandler:^(RETableViewItem *item) {
+            [item deselectRowAnimated:YES];
         }];
         item.style = UITableViewCellStyleDefault;
         item.textAlignment = NSTextAlignmentCenter;

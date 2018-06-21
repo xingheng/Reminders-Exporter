@@ -24,11 +24,18 @@
 	<string>Read the Calendars data for Exporting</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Read the Contacts data for Exporting</string>
-	<key>NSRemindersUsageDescription</key>
-	<string>Read the Reminders data for Exporting</string>
+    <key>NSRemindersUsageDescription</key>
+    <string>Read the Reminders data for Exporting</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Use the Significant-Change Location Service to Export and Push data</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Use the Significant-Change Location Service to Export and Push data</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Use the Significant-Change Location Service to Export and Push data</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

@@ -6,6 +6,7 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 #import <UserNotifications/UserNotifications.h>
+#import <CoreLocation/CoreLocation.h>
 #import <DSBaseViewController/BaseNavigationController.h>
 #import <DSBaseViewController/BaseTabBarController.h>
 #import "AppDelegate.h"
@@ -15,7 +16,9 @@
 #import "Repo+Reminders.h"
 #import "Repo+UserActions.h"
 
-@interface AppDelegate ()
+@interface AppDelegate () <CLLocationManagerDelegate>
+
+@property (nonatomic, strong) CLLocationManager *locationManager;
 
 @end
 
@@ -31,11 +34,45 @@
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     UNAuthorizationOptions options = UNAuthorizationOptionAlert + UNAuthorizationOptionSound;
     [center requestAuthorizationWithOptions:options
-                          completionHandler:^(BOOL granted, NSError *_Nullable error) {
+                          completionHandler:^(BOOL granted, NSError *error) {
         if (!granted) {
-            DDLogError(@"Something went wrong");
+            DDLogError(@"%s: error: %@", __func__, error);
         }
     }];
+
+    CLLocationManager *locationManager = [CLLocationManager new];
+    self.locationManager = locationManager;
+
+    switch ([CLLocationManager authorizationStatus]) {
+        case kCLAuthorizationStatusNotDetermined:
+            [locationManager requestAlwaysAuthorization];
+            break;
+
+        case kCLAuthorizationStatusRestricted:
+        case kCLAuthorizationStatusDenied:
+            DDLogDebug(@"Denied or Restricted!");
+            break;
+
+        case kCLAuthorizationStatusAuthorizedWhenInUse:
+            break;
+
+        case kCLAuthorizationStatusAuthorizedAlways:
+            locationManager.delegate = self;
+            locationManager.allowsBackgroundLocationUpdates = YES;
+
+            if (@available(iOS 11.0, *)) {
+                locationManager.showsBackgroundLocationIndicator = YES;
+            }
+
+            break;
+
+        default:
+            break;
+    }
+
+    if ([launchOptions[UIApplicationLaunchOptionsLocationKey] boolValue]) {
+        [locationManager startMonitoringSignificantLocationChanges];
+    }
 
     BaseNavigationController *navi1 = [[BaseNavigationController alloc] initWithRootViewController:[RemindersViewController new]];
     BaseNavigationController *navi2 = [[BaseNavigationController alloc] initWithRootViewController:[SettingsViewController new]];
@@ -62,6 +99,8 @@
 {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+
+    [self.locationManager startMonitoringSignificantLocationChanges];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -72,6 +111,8 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+
+    [self.locationManager stopMonitoringSignificantLocationChanges];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -85,34 +126,28 @@
 {
     [EKGroup fetchRemindersToRepo:Repo.reminderRepo
                        completion:^(BOOL result, NSArray<EKGroup *> *groups) {
-#if DEBUG
-        UNUserNotificationCenter * center = [UNUserNotificationCenter currentNotificationCenter];
-        [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
-            if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-                UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-                content.title = @"Updated";
-                content.body = NSDate.date.descriptionForCurrentLocale;
-                content.sound = [UNNotificationSound defaultSound];
-
-                UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1
-                                                                                                                repeats:NO];
-                NSString *identifier = @"UYLLocalNotification";
-                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
-                                                                                      content:content
-                                                                                      trigger:trigger];
-
-                [center addNotificationRequest:request
-                         withCompletionHandler:^(NSError *_Nullable error) {
-                    if (error != nil) {
-                        DDLogError(@"Something went wrong: %@", error);
-                    }
-                }];
-            }
-        }];
-#endif /* if DEBUG */
+        [self sendLocalNotification:@"Updated by Background Fetch"
+                               body:NSDate.date.descriptionForCurrentLocale];
         DDLogVerbose(@"Updated %@", NSDate.date.descriptionForCurrentLocale);
         completionHandler(result ? UIBackgroundFetchResultNewData : UIBackgroundFetchResultNoData);
     }];
+}
+
+#pragma mark - CLLocationManagerDelegate
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    [EKGroup fetchRemindersToRepo:Repo.reminderRepo
+                       completion:^(BOOL result, NSArray<EKGroup *> *groups) {
+        [self sendLocalNotification:@"Updated by Location Changes"
+                               body:NSDate.date.descriptionForCurrentLocale];
+        DDLogDebug(@"%s: %@", __func__, locations);
+    }];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    DDLogDebug(@"%s: %@", __func__, error);
 }
 
 #pragma mark - Private
@@ -121,6 +156,35 @@
 {
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
+}
+
+- (void)sendLocalNotification:(NSString *)title body:(NSString *)body
+{
+#if DEBUG
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
+        if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+            UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+            content.title = @"Updated";
+            content.body = NSDate.date.descriptionForCurrentLocale;
+            content.sound = [UNNotificationSound defaultSound];
+
+            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1
+                                                                                                            repeats:NO];
+            NSString *identifier = @"UYLLocalNotification";
+            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier
+                                                                                  content:content
+                                                                                  trigger:trigger];
+
+            [center addNotificationRequest:request
+                     withCompletionHandler:^(NSError *_Nullable error) {
+                if (error != nil) {
+                    DDLogError(@"Something went wrong: %@", error);
+                }
+            }];
+        }
+    }];
+#endif /* if DEBUG */
 }
 
 @end

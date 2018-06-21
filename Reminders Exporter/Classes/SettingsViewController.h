@@ -6,6 +6,9 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
+void OpenAppSettings(void (^completion)(BOOL success));
+
+
 @interface SettingsViewController : BASEVIEWCONTROLLER
 
 @end

@@ -15,6 +15,7 @@
 #import "UserPreferences.h"
 #import "RemindersTableView.h"
 
+FOUNDATION_EXPORT void OpenAppSettings(void (^completion)(BOOL success));
 
 #pragma mark - RemindersViewController
 
@@ -119,7 +120,6 @@
 {
     switch ([EKEventStore authorizationStatusForEntityType:EKEntityTypeReminder]) {
         case EKAuthorizationStatusAuthorized:
-            DDLogDebug(@"Authorized!");
             [self _fetchReminders:nil];
             break;
 
@@ -131,16 +131,7 @@
             .actionButton(^(UIButton *button) {
                 [button setTitle:@"OK" forState:UIControlStateNormal];
                 [button addEventBlock:^(id sender) {
-                    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-                    UIApplication *application = [UIApplication sharedApplication];
-
-                    if ([application canOpenURL:url]) {
-                        [application  openURL:url
-                                      options:@{}
-                            completionHandler:^(BOOL success) {
-                            HUDHide(self.view);
-                        }];
-                    }
+                    OpenAppSettings(nil);
                 }
                      forControlEvents:UIControlEventTouchUpInside];
             }).show();
