@@ -12,6 +12,7 @@
 #import "RepositoryViewController.h"
 #import "UserPreferences.h"
 #import "Repo+UserActions.h"
+#import "EKGroup+Reminders.h"
 
 @interface RepositoryViewController () <RETableViewManagerDelegate>
 
@@ -180,15 +181,45 @@
             return [obj.remoteName isEqualToString:remote.name];
         }];
 
+        item = [RETableViewItem itemWithTitle:@"Pull"
+                                accessoryType:UITableViewCellAccessoryNone
+                             selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
+            [item deselectRowAnimated:YES];
+
+            @weakify(self);
+            NSError *error = nil;
+
+            if (![self.repository pullFromRemote:remote.name
+                                           merge:^BOOL {
+                @strongify(self);
+                dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);
+
+                [EKGroup fetchRemindersToRepo:self.repository
+                                   completion:^(BOOL result, NSArray<EKGroup *> *groups) {
+                    dispatch_semaphore_signal(semaphore);
+                }];
+
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+                return NO;
+            }
+                                           error:&error]) {
+                HUDToast(self.view).title(@"Pull changes failed!").subTitle(error.description).delay(5).show();
+            }
+        }];
+        item.style = UITableViewCellStyleValue1;
+        item.detailLabelText = [remoteBranch targetCommitWithError:nil].commitDate.descriptionForCurrentLocale;
+        [section addItem:item];
+
         item = [RETableViewItem itemWithTitle:@"Push"
                                 accessoryType:UITableViewCellAccessoryNone
                              selectionHandler:^(RETableViewItem *item) {
             @strongify(self);
             [item deselectRowAnimated:YES];
-            [self.repository pushToRemotes];
+            [self.repository pushToRemotes:nil];
         }];
         item.style = UITableViewCellStyleValue1;
-        item.detailLabelText = [remoteBranch targetCommitWithError:nil].commitDate.description;
+        item.detailLabelText = [remoteBranch targetCommitWithError:nil].commitDate.descriptionForCurrentLocale;
         [section addItem:item];
 
         item = [RETableViewItem itemWithTitle:@"Delete"
@@ -262,10 +293,11 @@
 
             if (!remote || error) {
                 HUDToast(self.view).title(@"Failed to add remote").subTitle(error.description).delay(5).show();
-            } else {
-                self.showReservedNewRemote = NO;
-                [self _reloadTable];
+                return;
             }
+
+            self.showReservedNewRemote = NO;
+            [self _reloadTable];
         }];
         [section addItem:item];
 

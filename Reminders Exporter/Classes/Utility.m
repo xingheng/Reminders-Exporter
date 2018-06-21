@@ -1,12 +1,14 @@
 //
-//  PathUtility.m
+//  Utility.m
 //  Reminders Exporter
 //
 //  Created by WeiHan on 11/05/2018.
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
-#import "PathUtility.h"
+#import "Utility.h"
+
+#pragma mark - Functions
 
 BOOL IsFileExist(NSString *strFilePath)
 {
@@ -76,3 +78,14 @@ NSURL * GetReminderRepoRootDirectoryPath(void)
 
     return CreateDirectoryIfNotExist(resultURL);
 }
+
+#pragma mark - NSDate (Descriptions)
+
+@implementation NSDate (Descriptions)
+
+- (NSString *)descriptionForCurrentLocale
+{
+    return [self descriptionWithLocale:NSLocale.currentLocale];
+}
+
+@end

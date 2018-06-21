@@ -27,6 +27,8 @@
 
 #import <HUDHelper/HUDHelper.h>
 
+#import "Utility.h"
+
 #define THEME_BLACK_COLOR    RGB(41, 41, 41)
 
 #if DEBUG

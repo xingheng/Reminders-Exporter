@@ -63,7 +63,7 @@
             DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
 
             if ([repository commitWorkingFiles]) {
-                result = [repository pushToRemotes];
+                result = [repository pushToRemotes:nil];
             }
         }
 

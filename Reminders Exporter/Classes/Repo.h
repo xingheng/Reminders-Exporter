@@ -14,8 +14,8 @@
 
 - (BOOL)commitWorkingFiles:(GTSignature *)signature;
 
-- (void)fetchRemote:(NSString *)remoteName URL:(NSString *)url credentialProvider:(GTCredentialProvider *)provider;
+- (BOOL)fetchRemote:(NSString *)remoteName credentialProvider:(GTCredentialProvider *)provider error:(NSError **)outError;
 
-- (BOOL)pushToRemote:(GTCredentialProvider *)provider;
+- (BOOL)pushToRemote:(GTCredentialProvider *)provider error:(NSError **)outError;
 
 @end

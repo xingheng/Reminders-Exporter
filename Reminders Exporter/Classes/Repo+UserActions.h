@@ -12,6 +12,8 @@
 
 - (BOOL)commitWorkingFiles;
 
-- (BOOL)pushToRemotes;
+- (BOOL)pullFromRemote:(NSString *)remoteName merge:(BOOL (^)(void))conflictBlock error:(NSError **)outError;
+
+- (BOOL)pushToRemotes:(NSError **)error;
 
 @end

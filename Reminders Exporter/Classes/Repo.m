@@ -24,7 +24,7 @@
 {
     NSError *error = nil;
     GTIndex *index = [self indexWithError:&error];
-    BOOL hasChanges = NO;
+    BOOL hasChanges = NO, hasConflict = NO;
 
     for (NSString *filepath in [self allFiles]) {
         BOOL success;
@@ -53,6 +53,10 @@
                 hasChanges |= YES;
                 break;
 
+            case GIT_STATUS_CONFLICTED:
+                hasConflict |= YES;
+
+            // break;
             case GTFileStatusModifiedInWorktree:
             case GTFileStatusRenamedInWorktree:
 
@@ -77,7 +81,7 @@
     GTReference *reference = [self headReferenceWithError:&error];
     GTBranch *currentBranch = [self currentBranchWithError:&error];
     GTCommit *latestComit = [currentBranch targetCommitWithError:&error];
-    NSString *strMessage = latestComit ? [NSString stringWithFormat:@"Update at %@", NSDate.date] : @"Initial commit.";
+    NSString *strMessage = latestComit ? (hasConflict ? @"Merge conflicts" : [NSString stringWithFormat:@"Update at %@", NSDate.date.descriptionForCurrentLocale]) : @"Initial commit.";
 
     GTCommit *commit = [self createCommitWithTree:tree message:strMessage author:signature committer:signature parents:latestComit ? @[latestComit] : nil updatingReferenceNamed:reference.name error:&error];
     DDLogDebug(@"%@", commit);
@@ -89,34 +93,30 @@
     return YES;
 }
 
-- (void)fetchRemote:(NSString *)remoteName URL:(NSString *)url credentialProvider:(GTCredentialProvider *)provider
+- (BOOL)fetchRemote:(NSString *)remoteName credentialProvider:(GTCredentialProvider *)provider error:(NSError **)outError
 {
     NSError *error = nil;
+    GTRemote *remote = [GTRemote remoteWithName:remoteName inRepository:self error:&error];
 
-    NSArray<NSString *> *remoteNames = [self remoteNamesWithError:&error];
-    BOOL existing = [remoteNames bk_any:^BOOL (NSString *obj) {
-        return [obj isEqualToString:remoteName];
-    }];
-
-    GTRemote *remote = nil;
-
-    if (existing) {
-        remote = [GTRemote remoteWithName:remoteName inRepository:self error:&error];
-    } else {
-        remote = [GTRemote createRemoteWithName:remoteName URLString:url inRepository:self error:&error];
+    if (remote) {
+        [self fetchRemote:remote
+              withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider: provider }
+                    error:&error
+                 progress:^(const git_transfer_progress *stats, BOOL *stop) {
+            if (stats->total_objects > 0) {
+                DDLogVerbose(@"Receiving objects: %.2f%% (%d/%d)", 100.0 * stats->received_objects / stats->total_objects, stats->received_objects, stats->total_objects);
+            }
+        }];
     }
 
-    [self fetchRemote:remote
-          withOptions:@{ GTRepositoryRemoteOptionsCredentialProvider: provider }
-                error:&error
-             progress:^(const git_transfer_progress *stats, BOOL *stop) {
-        DDLogVerbose(@"Receiving objects: %.2f%% (%d/%d", 100.0 * stats->received_objects / stats->total_objects, stats->received_objects, stats->total_objects);
-    }];
+    if (error && outError) {
+        *outError = error;
+    }
 
-    DDLogDebug(@"error: %@", error);
+    return !error;
 }
 
-- (BOOL)pushToRemote:(GTCredentialProvider *)provider
+- (BOOL)pushToRemote:(GTCredentialProvider *)provider error:(NSError **)outError
 {
     BOOL result = YES;
     NSError *error = nil;
@@ -138,8 +138,8 @@
         }];
     }
 
-    if (!result) {
-        DDLogError(@"%s, error: %@", __func__, error);
+    if (error && outError) {
+        *outError = error;
     }
 
     return result;

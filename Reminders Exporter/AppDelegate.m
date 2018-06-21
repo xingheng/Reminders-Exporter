@@ -91,7 +91,7 @@
             if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
                 UNMutableNotificationContent *content = [UNMutableNotificationContent new];
                 content.title = @"Updated";
-                content.body = [NSDate.date descriptionWithLocale:NSLocale.currentLocale];
+                content.body = NSDate.date.descriptionForCurrentLocale;
                 content.sound = [UNNotificationSound defaultSound];
 
                 UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1
@@ -110,7 +110,7 @@
             }
         }];
 #endif /* if DEBUG */
-        DDLogVerbose(@"Updated %@", [NSDate.date descriptionWithLocale:NSLocale.currentLocale]);
+        DDLogVerbose(@"Updated %@", NSDate.date.descriptionForCurrentLocale);
         completionHandler(result ? UIBackgroundFetchResultNewData : UIBackgroundFetchResultNoData);
     }];
 }

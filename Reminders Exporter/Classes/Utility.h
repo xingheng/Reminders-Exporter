@@ -1,5 +1,5 @@
 //
-//  PathUtility.h
+//  Utility.h
 //  Reminders Exporter
 //
 //  Created by WeiHan on 11/05/2018.
@@ -21,3 +21,12 @@ NSURL * CreateDirectoryIfNotExist(NSURL *sourceURL);
 NSURL * GetRepoRootDirectoryPath(void);
 
 NSURL * GetReminderRepoRootDirectoryPath(void);
+
+
+#pragma mark - Functions
+
+@interface NSDate (Descriptions)
+
+- (NSString *)descriptionForCurrentLocale;
+
+@end

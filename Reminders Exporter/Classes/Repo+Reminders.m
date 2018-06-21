@@ -7,7 +7,6 @@
 //
 
 #import "Repo+Reminders.h"
-#import "PathUtility.h"
 
 @implementation Repo (Reminders)
 

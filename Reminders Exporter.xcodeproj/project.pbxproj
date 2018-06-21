@@ -17,7 +17,7 @@
 		6816263820A5523400B155D1 /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6816263720A5523400B155D1 /* ObjectiveGit.framework */; };
 		6816263C20A573AA00B155D1 /* EKGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263B20A573AA00B155D1 /* EKGroup.m */; };
 		6816263F20A57AAD00B155D1 /* Repo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263E20A57AAD00B155D1 /* Repo.m */; };
-		6816264220A5885800B155D1 /* PathUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816264120A5885800B155D1 /* PathUtility.m */; };
+		6816264220A5885800B155D1 /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816264120A5885800B155D1 /* Utility.m */; };
 		68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */; };
 		68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7120D8AEEC002DD326 /* UserPreferences.m */; };
 		68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7420D8BBED002DD326 /* SettingsViewController.m */; };
@@ -47,8 +47,8 @@
 		6816263B20A573AA00B155D1 /* EKGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EKGroup.m; sourceTree = "<group>"; };
 		6816263D20A57AAD00B155D1 /* Repo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Repo.h; sourceTree = "<group>"; };
 		6816263E20A57AAD00B155D1 /* Repo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Repo.m; sourceTree = "<group>"; };
-		6816264020A5885800B155D1 /* PathUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PathUtility.h; sourceTree = "<group>"; };
-		6816264120A5885800B155D1 /* PathUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PathUtility.m; sourceTree = "<group>"; };
+		6816264020A5885800B155D1 /* Utility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utility.h; sourceTree = "<group>"; };
+		6816264120A5885800B155D1 /* Utility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };
 		688B1BCE20A4A2BB00B7558A /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		68FD7F6D20D38DF8002DD326 /* RepositoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RepositoryViewController.h; sourceTree = "<group>"; };
 		68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepositoryViewController.m; sourceTree = "<group>"; };
@@ -145,8 +145,8 @@
 				68FD7F8020DA4813002DD326 /* Repo+Reminders.m */,
 				68FD7F7620D904C2002DD326 /* Repo+UserActions.h */,
 				68FD7F7720D904C2002DD326 /* Repo+UserActions.m */,
-				6816264020A5885800B155D1 /* PathUtility.h */,
-				6816264120A5885800B155D1 /* PathUtility.m */,
+				6816264020A5885800B155D1 /* Utility.h */,
+				6816264120A5885800B155D1 /* Utility.m */,
 				68FD7F7020D8AEEC002DD326 /* UserPreferences.h */,
 				68FD7F7120D8AEEC002DD326 /* UserPreferences.m */,
 			);
@@ -193,7 +193,7 @@
 		6816261120A43D9300B155D1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = WillHan;
 				TargetAttributes = {
 					6816261820A43D9300B155D1 = {
@@ -308,7 +308,7 @@
 				68FD7F7B20D9FAF3002DD326 /* RemindersTableView.m in Sources */,
 				68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */,
 				68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */,
-				6816264220A5885800B155D1 /* PathUtility.m in Sources */,
+				6816264220A5885800B155D1 /* Utility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +340,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -347,6 +348,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -395,6 +397,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -402,6 +405,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
