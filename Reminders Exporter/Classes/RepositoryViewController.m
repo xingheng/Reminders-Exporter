@@ -87,16 +87,19 @@
         item.detailLabelText = [NSString stringWithFormat:@"%@", [currentBranch targetCommitWithError:nil].commitDate];
         [section addItem:item];
 
+        NSDictionary *signatureDict = GetSignature();
+
         item = [RETableViewItem itemWithTitle:@"Signature"
                                 accessoryType:UITableViewCellAccessoryDetailButton
                              selectionHandler:^(RETableViewItem *item) {
             [item deselectRowAnimated:YES];
         }];
         item.accessoryButtonTapHandler = ^(id item) {
-            HUDToast(self.view).title(@"Edit signature in Setting page!").delay(2).show();
+            NSString *strMessage = [NSString stringWithFormat:@"Name: %@\nEmail: %@", signatureDict[SignatureUsername], signatureDict[SignatureEmail]];
+            HUDToast(self.view).title(@"Signature").subTitle(strMessage).delay(2).show();
         };
         item.style = UITableViewCellStyleValue1;
-        item.detailLabelText = GetSignature()[SignatureUsername];
+        item.detailLabelText = signatureDict[SignatureUsername];
         [section addItem:item];
     }
 
@@ -171,7 +174,8 @@
             [item deselectRowAnimated:YES];
         }];
         item.accessoryButtonTapHandler = ^(id item) {
-            HUDToast(self.view).title(@"Edit credential in Setting page!").delay(2).show();
+            NSString *strMessage = [NSString stringWithFormat:@"Site: %@\nUsername: %@", urlHost, credentialDict[CredentialKeyUsername]];
+            HUDToast(self.view).title(@"Credential").subTitle(strMessage).delay(2).show();
         };
         item.style = UITableViewCellStyleValue1;
         item.detailLabelText = credentialDict[CredentialKeyUsername] ? : @"None";

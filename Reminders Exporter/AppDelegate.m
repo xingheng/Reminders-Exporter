@@ -165,8 +165,8 @@
     [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *_Nonnull settings) {
         if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
             UNMutableNotificationContent *content = [UNMutableNotificationContent new];
-            content.title = @"Updated";
-            content.body = NSDate.date.descriptionForCurrentLocale;
+            content.title = title;
+            content.body = body;
             content.sound = [UNNotificationSound defaultSound];
 
             UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1

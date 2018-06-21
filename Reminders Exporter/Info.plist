@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Exporter</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -24,14 +26,14 @@
 	<string>Read the Calendars data for Exporting</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Read the Contacts data for Exporting</string>
-    <key>NSRemindersUsageDescription</key>
-    <string>Read the Reminders data for Exporting</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Use the Significant-Change Location Service to Export and Push data</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Use the Significant-Change Location Service to Export and Push data</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Use the Significant-Change Location Service to Export and Push data</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Use the Significant-Change Location Service to Export and Push data</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Use the Significant-Change Location Service to Export and Push data</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Use the Significant-Change Location Service to Export and Push data</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Read the Reminders data for Exporting</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
