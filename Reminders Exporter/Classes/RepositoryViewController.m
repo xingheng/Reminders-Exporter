@@ -321,20 +321,12 @@
 
 - (void)_removeRemote:(GTRemote *)remote
 {
-    NSError *error = nil;
-    NSString *prefix = [NSString stringWithFormat:@"remote.%@", remote.name];
-    GTConfiguration *config = [self.repository configurationWithError:&error];
+    int err = git_remote_delete(self.repository.git_repository, remote.name.UTF8String);
 
-    for (NSString *key in config.configurationKeys) {
-        if ([key hasPrefix:prefix]) {
-            [config deleteValueForKey:key
-                                error:&error];
-            DDLogError(@"%@", error);
-        }
-    }
-
-    if (error) {
-        HUDToast(self.view).title(@"Remove the remote failed!").subTitle(error.description).delay(5).show();
+    if (err != 0) {
+        DDLogError(@"%s: error code: %d", __func__, err);
+        HUDToast(self.view).title(@"Remove the remote failed!").delay(5).show();
+        return;
     }
 
     [self _reloadTable];
