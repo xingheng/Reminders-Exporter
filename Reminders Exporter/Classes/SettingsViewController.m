@@ -10,6 +10,8 @@
 #import <DSUtility/AlertHelper.h>
 #import <DSUtility/NSString+ValueValidation.h>
 #import "SettingsViewController.h"
+#import "LogListViewController.h"
+#import "AboutViewController.h"
 #import "UserPreferences.h"
 
 #pragma mark - Functions
@@ -23,6 +25,8 @@ void OpenAppSettings(void (^completion)(BOOL success))
         [application openURL:url options:@{} completionHandler:completion];
     }
 }
+
+#pragma mark - SettingsViewController
 
 @interface SettingsViewController () <RETableViewManagerDelegate>
 
@@ -155,10 +159,24 @@ void OpenAppSettings(void (^completion)(BOOL success))
         item.textAlignment = NSTextAlignmentCenter;
         [section addItem:item];
 
+        item = [RETableViewItem itemWithTitle:@"Logs"
+                                accessoryType:UITableViewCellAccessoryNone
+                             selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
+            [item deselectRowAnimated:YES];
+
+            [self pushViewController:[LogListViewController new]];
+        }];
+        item.style = UITableViewCellStyleDefault;
+        item.textAlignment = NSTextAlignmentCenter;
+        [section addItem:item];
+
         item = [RETableViewItem itemWithTitle:@"About"
                                 accessoryType:UITableViewCellAccessoryNone
                              selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
             [item deselectRowAnimated:YES];
+            [self pushViewController:[AboutViewController new]];
         }];
         item.style = UITableViewCellStyleDefault;
         item.textAlignment = NSTextAlignmentCenter;

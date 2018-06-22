@@ -6,6 +6,7 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
+#import <DSUtility/NSString+Date.h>
 #import "Utility.h"
 
 #pragma mark - Functions
@@ -85,7 +86,8 @@ NSURL * GetReminderRepoRootDirectoryPath(void)
 
 - (NSString *)descriptionForCurrentLocale
 {
-    return [self descriptionWithLocale:NSLocale.currentLocale];
+    return [self stringFromDateFormat:kDateFormat_Date_Time_Second];
+//    return [self descriptionWithLocale:NSLocale.currentLocale];
 }
 
 @end

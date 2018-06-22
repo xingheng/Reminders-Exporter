@@ -15,6 +15,7 @@
 #import "EKGroup+Reminders.h"
 #import "Repo+Reminders.h"
 #import "Repo+UserActions.h"
+#import "REFileLogger.h"
 
 @interface AppDelegate () <CLLocationManagerDelegate>
 
@@ -156,6 +157,7 @@
 {
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    [DDLog addLogger:[REFileLogger sharedInstance]];
 }
 
 - (void)sendLocalNotification:(NSString *)title body:(NSString *)body

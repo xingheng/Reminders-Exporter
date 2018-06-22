@@ -19,6 +19,11 @@
 		6816263F20A57AAD00B155D1 /* Repo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816263E20A57AAD00B155D1 /* Repo.m */; };
 		6816264220A5885800B155D1 /* Utility.m in Sources */ = {isa = PBXBuildFile; fileRef = 6816264120A5885800B155D1 /* Utility.m */; };
 		68B6163720DB9D32007E6A5F /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 68B6163620DB9D32007E6A5F /* CoreLocation.framework */; };
+		68B6163A20DCD5C3007E6A5F /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68B6163920DCD5C3007E6A5F /* AboutViewController.m */; };
+		68B6163D20DCD640007E6A5F /* LogListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68B6163C20DCD640007E6A5F /* LogListViewController.m */; };
+		68B6164020DCD677007E6A5F /* LogReviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68B6163F20DCD677007E6A5F /* LogReviewViewController.m */; };
+		68B6164320DCD96E007E6A5F /* REFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 68B6164220DCD96E007E6A5F /* REFileLogger.m */; };
+		68B6164520DCEE1A007E6A5F /* README.html in Resources */ = {isa = PBXBuildFile; fileRef = 68B6164420DCEE1A007E6A5F /* README.html */; };
 		68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */; };
 		68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7120D8AEEC002DD326 /* UserPreferences.m */; };
 		68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FD7F7420D8BBED002DD326 /* SettingsViewController.m */; };
@@ -52,6 +57,15 @@
 		6816264120A5885800B155D1 /* Utility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Utility.m; sourceTree = "<group>"; };
 		688B1BCE20A4A2BB00B7558A /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		68B6163620DB9D32007E6A5F /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		68B6163820DCD5C3007E6A5F /* AboutViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
+		68B6163920DCD5C3007E6A5F /* AboutViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
+		68B6163B20DCD640007E6A5F /* LogListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogListViewController.h; sourceTree = "<group>"; };
+		68B6163C20DCD640007E6A5F /* LogListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LogListViewController.m; sourceTree = "<group>"; };
+		68B6163E20DCD677007E6A5F /* LogReviewViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogReviewViewController.h; sourceTree = "<group>"; };
+		68B6163F20DCD677007E6A5F /* LogReviewViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LogReviewViewController.m; sourceTree = "<group>"; };
+		68B6164120DCD96E007E6A5F /* REFileLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = REFileLogger.h; sourceTree = "<group>"; };
+		68B6164220DCD96E007E6A5F /* REFileLogger.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = REFileLogger.m; sourceTree = "<group>"; };
+		68B6164420DCEE1A007E6A5F /* README.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = README.html; sourceTree = SOURCE_ROOT; };
 		68FD7F6D20D38DF8002DD326 /* RepositoryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RepositoryViewController.h; sourceTree = "<group>"; };
 		68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepositoryViewController.m; sourceTree = "<group>"; };
 		68FD7F7020D8AEEC002DD326 /* UserPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserPreferences.h; sourceTree = "<group>"; };
@@ -120,6 +134,7 @@
 				6816262E20A43DD100B155D1 /* Classes */,
 				6816261F20A43D9300B155D1 /* Assets.xcassets */,
 				6816262120A43D9300B155D1 /* LaunchScreen.storyboard */,
+				68B6164420DCEE1A007E6A5F /* README.html */,
 				6816262420A43D9300B155D1 /* Info.plist */,
 				688B1BCE20A4A2BB00B7558A /* PrefixHeader.pch */,
 				6816262520A43D9300B155D1 /* main.m */,
@@ -134,10 +149,16 @@
 				6816263020A43DE400B155D1 /* RemindersViewController.m */,
 				68FD7F7920D9FAF3002DD326 /* RemindersTableView.h */,
 				68FD7F7A20D9FAF3002DD326 /* RemindersTableView.m */,
-				68FD7F7320D8BBED002DD326 /* SettingsViewController.h */,
-				68FD7F7420D8BBED002DD326 /* SettingsViewController.m */,
 				68FD7F6D20D38DF8002DD326 /* RepositoryViewController.h */,
 				68FD7F6E20D38DF8002DD326 /* RepositoryViewController.m */,
+				68FD7F7320D8BBED002DD326 /* SettingsViewController.h */,
+				68FD7F7420D8BBED002DD326 /* SettingsViewController.m */,
+				68B6163B20DCD640007E6A5F /* LogListViewController.h */,
+				68B6163C20DCD640007E6A5F /* LogListViewController.m */,
+				68B6163E20DCD677007E6A5F /* LogReviewViewController.h */,
+				68B6163F20DCD677007E6A5F /* LogReviewViewController.m */,
+				68B6163820DCD5C3007E6A5F /* AboutViewController.h */,
+				68B6163920DCD5C3007E6A5F /* AboutViewController.m */,
 				6816263A20A573AA00B155D1 /* EKGroup.h */,
 				6816263B20A573AA00B155D1 /* EKGroup.m */,
 				68FD7F7C20DA4030002DD326 /* EKGroup+Reminders.h */,
@@ -148,6 +169,8 @@
 				68FD7F8020DA4813002DD326 /* Repo+Reminders.m */,
 				68FD7F7620D904C2002DD326 /* Repo+UserActions.h */,
 				68FD7F7720D904C2002DD326 /* Repo+UserActions.m */,
+				68B6164120DCD96E007E6A5F /* REFileLogger.h */,
+				68B6164220DCD96E007E6A5F /* REFileLogger.m */,
 				6816264020A5885800B155D1 /* Utility.h */,
 				6816264120A5885800B155D1 /* Utility.m */,
 				68FD7F7020D8AEEC002DD326 /* UserPreferences.h */,
@@ -235,6 +258,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6816262020A43D9300B155D1 /* Assets.xcassets in Resources */,
+				68B6164520DCEE1A007E6A5F /* README.html in Resources */,
 				6816262320A43D9300B155D1 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -305,13 +329,17 @@
 				6816262620A43D9300B155D1 /* main.m in Sources */,
 				68FD7F8120DA4813002DD326 /* Repo+Reminders.m in Sources */,
 				6816263C20A573AA00B155D1 /* EKGroup.m in Sources */,
+				68B6163D20DCD640007E6A5F /* LogListViewController.m in Sources */,
 				68FD7F7520D8BBED002DD326 /* SettingsViewController.m in Sources */,
+				68B6164020DCD677007E6A5F /* LogReviewViewController.m in Sources */,
 				6816263120A43DE400B155D1 /* RemindersViewController.m in Sources */,
 				6816261E20A43D9300B155D1 /* AppDelegate.m in Sources */,
 				68FD7F7820D904C2002DD326 /* Repo+UserActions.m in Sources */,
 				68FD7F7B20D9FAF3002DD326 /* RemindersTableView.m in Sources */,
+				68B6163A20DCD5C3007E6A5F /* AboutViewController.m in Sources */,
 				68FD7F7220D8AEEC002DD326 /* UserPreferences.m in Sources */,
 				68FD7F6F20D38DF8002DD326 /* RepositoryViewController.m in Sources */,
+				68B6164320DCD96E007E6A5F /* REFileLogger.m in Sources */,
 				6816264220A5885800B155D1 /* Utility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
