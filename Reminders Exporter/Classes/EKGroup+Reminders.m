@@ -62,8 +62,8 @@
 
             static dispatch_once_t onceToken;
             dispatch_once(&onceToken, ^{
-                DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
-            });
+                          DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
+                      });
 
             if ([repository commitWorkingFiles]) {
                 result = [repository pushToRemotes:nil];
@@ -75,8 +75,8 @@
                 completion(result, groups);
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(result, groups);
-                });
+                               completion(result, groups);
+                           });
             }
         }
     }];

@@ -22,6 +22,10 @@ NSURL * GetRepoRootDirectoryPath(void);
 
 NSURL * GetReminderRepoRootDirectoryPath(void);
 
+NSURL * GetSSHKeysRootDirectoryPath(void);
+
+bool generate_key(const char *public_key_file, const char *private_key_file);
+
 
 #pragma mark - Functions
 

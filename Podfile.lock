@@ -73,6 +73,7 @@ PODS:
   - libextobjc/UmbrellaHeader (0.4.1)
   - Masonry (1.1.0)
   - MBProgressHUD (1.1.0)
+  - OpenSSL-Universal (1.0.2.13)
   - REFormattedNumberField (1.1.6)
   - RETableViewManager (1.7):
     - REFormattedNumberField (~> 1.1.5)
@@ -89,6 +90,7 @@ DEPENDENCIES:
   - HUDHelper
   - libextobjc (~> 0.4)
   - Masonry (= 1.1.0)
+  - OpenSSL-Universal
   - RETableViewManager (~> 1.7)
   - UserDefaultsHelper (~> 0.1)
 
@@ -104,6 +106,7 @@ SPEC REPOS:
     - libextobjc
     - Masonry
     - MBProgressHUD
+    - OpenSSL-Universal
     - REFormattedNumberField
     - RETableViewManager
     - REValidation
@@ -119,11 +122,12 @@ SPEC CHECKSUMS:
   libextobjc: a650fc1bf489a3d3a9bc2e621efa3e1006fc5471
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
+  OpenSSL-Universal: 401888162f11c33ebbd46f782d9229da35c61327
   REFormattedNumberField: 70fc5fb1218ebd5ee9983820defd12806d5c6ec6
   RETableViewManager: 0f24d796c42c0890d38c79cc9aeb3871e186726e
   REValidation: 38c4de1be58455f8b00aab208ac80db316a66b7f
   UserDefaultsHelper: 96ec1f1c68d37db01da62f8216eda62dbc7feacc
 
-PODFILE CHECKSUM: 684ce1afe876e20e63187a7f963738a1173dbc0a
+PODFILE CHECKSUM: 2ab3e45db65ea57e7d27a31e05a20a0cd0711173
 
 COCOAPODS: 1.5.2

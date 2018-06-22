@@ -14,8 +14,13 @@
 NSString *const SignatureUsername = @"Username";
 NSString *const SignatureEmail = @"Password";
 
+NSString *const CredentialKeyType = @"Type";
 NSString *const CredentialKeyUsername = @"Username";
 NSString *const CredentialKeyPassword = @"Password";
+NSString *const CredentialKeySSHKey = @"SSHKey";
+
+NSUInteger const CredentialKeyTypeHTTPS = 1;
+NSUInteger const CredentialKeyTypeSSH = 2;
 
 #define UserKey(__KEY__) @"Exporter." #__KEY__
 

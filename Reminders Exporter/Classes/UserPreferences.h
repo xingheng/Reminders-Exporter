@@ -11,8 +11,14 @@
 FOUNDATION_EXPORT NSString *const SignatureUsername;
 FOUNDATION_EXPORT NSString *const SignatureEmail;
 
+FOUNDATION_EXPORT NSString *const CredentialKeyType;
 FOUNDATION_EXPORT NSString *const CredentialKeyUsername;
 FOUNDATION_EXPORT NSString *const CredentialKeyPassword;
+FOUNDATION_EXPORT NSString *const CredentialKeySSHKey;
+
+FOUNDATION_EXPORT NSUInteger const CredentialKeyTypeHTTPS;
+FOUNDATION_EXPORT NSUInteger const CredentialKeyTypeSSH;
+
 
 NSDictionary * GetSignature(void);
 

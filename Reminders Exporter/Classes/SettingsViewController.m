@@ -9,10 +9,23 @@
 #import <RETableViewManager/RETableViewManager.h>
 #import <DSUtility/AlertHelper.h>
 #import <DSUtility/NSString+ValueValidation.h>
+#import <DSUtility/NSString+Date.h>
 #import "SettingsViewController.h"
 #import "LogListViewController.h"
 #import "AboutViewController.h"
 #import "UserPreferences.h"
+
+#define kSSHKeyPublicFileName(__prefix__)  [NSString stringWithFormat:@"%@.pub", __prefix__]
+#define kSSHKeyPrivateFileName(__prefix__) [NSString stringWithFormat:@"%@.pem", __prefix__]
+
+#define kSSHKeyFullPath(__filename__)      [GetSSHKeysRootDirectoryPath() URLByAppendingPathComponent:(__filename__)].path
+
+
+typedef NS_OPTIONS (NSUInteger, CredentialType) {
+    CredentialTypeNone  = 0,
+    CredentialTypeHTTPS = 1 << 0,
+    CredentialTypeSSH   = 1 << 1
+};
 
 #pragma mark - Functions
 
@@ -32,7 +45,7 @@ void OpenAppSettings(void (^completion)(BOOL success))
 
 @property (nonatomic, strong) RETableViewManager *tableManager;
 
-@property (nonatomic, assign) BOOL showReservedNewCredential;
+@property (nonatomic, assign) CredentialType credentialType;
 
 @end
 
@@ -49,6 +62,16 @@ void OpenAppSettings(void (^completion)(BOOL success))
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Property
+
+- (void)setCredentialType:(CredentialType)credentialType
+{
+    if (_credentialType != credentialType) {
+        _credentialType = credentialType;
+        [self _reloadTable];
+    }
 }
 
 #pragma mark - Private
@@ -124,8 +147,12 @@ void OpenAppSettings(void (^completion)(BOOL success))
         strHeader = @"No any credentials yet";
     }
 
-    if (self.showReservedNewCredential) {
-        [self.tableManager addSection:[self _sectionForNewCredential]];
+    if (self.credentialType & CredentialTypeHTTPS) {
+        [self.tableManager addSection:[self _sectionForNewCredentialForHTTPS]];
+    }
+
+    if (self.credentialType & CredentialTypeSSH) {
+        [self.tableManager addSection:[self _sectionForNewCredentialForSSH]];
     }
 
     section = [RETableViewSection sectionWithHeaderTitle:strHeader footerTitle:@"Notes: The credential you filled will be saved to local storage ONLY without any encryptions, please keep it in safe by yourself for the app sandbox!"];
@@ -136,8 +163,23 @@ void OpenAppSettings(void (^completion)(BOOL success))
                                               selectionHandler:^(RETableViewItem *item) {
             @strongify(self);
             [item deselectRowAnimated:YES];
-            self.showReservedNewCredential = YES;
-            [self _reloadTable];
+
+            AlertHelper *alert = [AlertHelper alertControllerWithTitle:@"Choose a credential type"
+                                                               message:@""
+                                                        preferredStyle:UIAlertControllerStyleActionSheet];
+
+            [alert addDefaultAction:@"HTTPS"
+                            handler:^(UIAlertAction *_Nullable action) {
+                self.credentialType |= CredentialKeyTypeHTTPS;
+            }];
+            [alert addDefaultAction:@"SSH"
+                            handler:^(UIAlertAction *_Nullable action) {
+                self.credentialType |= CredentialKeyTypeSSH;
+            }];
+            [alert addCancelAction:@"Cancel"
+                           handler:nil];
+
+            [alert presentInViewController:self];
         }];
         item.style = UITableViewCellStyleDefault;
         item.textAlignment = NSTextAlignmentCenter;
@@ -204,29 +246,42 @@ void OpenAppSettings(void (^completion)(BOOL success))
         item.detailLabelText = site;
         [section addItem:item];
 
-        item = [RETableViewItem itemWithTitle:@"Username"
-                                accessoryType:UITableViewCellAccessoryNone
-                             selectionHandler:^(RETableViewItem *item) {
-            [item deselectRowAnimated:YES];
-        }];
-        item.style = UITableViewCellStyleValue1;
-        item.detailLabelText = value[CredentialKeyUsername];
-        [section addItem:item];
+        NSUInteger type = [value[CredentialKeyType] unsignedIntegerValue];
 
-        NSMutableString *password = [NSMutableString new];
+        if (type == CredentialKeyTypeHTTPS) {
+            item = [RETableViewItem itemWithTitle:@"Username"
+                                    accessoryType:UITableViewCellAccessoryNone
+                                 selectionHandler:^(RETableViewItem *item) {
+                [item deselectRowAnimated:YES];
+            }];
+            item.style = UITableViewCellStyleValue1;
+            item.detailLabelText = value[CredentialKeyUsername];
+            [section addItem:item];
 
-        for (NSUInteger idx = 0; idx < ((NSString *)value[CredentialKeyPassword]).length; idx++) {
-            [password appendString:@"*"];
+            NSMutableString *password = [NSMutableString new];
+
+            for (NSUInteger idx = 0; idx < ((NSString *)value[CredentialKeyPassword]).length; idx++) {
+                [password appendString:@"*"];
+            }
+
+            item = [RETableViewItem itemWithTitle:@"Password"
+                                    accessoryType:UITableViewCellAccessoryNone
+                                 selectionHandler:^(RETableViewItem *item) {
+                [item deselectRowAnimated:YES];
+            }];
+            item.style = UITableViewCellStyleValue1;
+            item.detailLabelText = password;
+            [section addItem:item];
+        } else if (type == CredentialKeyTypeSSH) {
+            item = [RETableViewItem itemWithTitle:@"SSH Key"
+                                    accessoryType:UITableViewCellAccessoryNone
+                                 selectionHandler:^(RETableViewItem *item) {
+                [item deselectRowAnimated:YES];
+            }];
+            item.style = UITableViewCellStyleValue1;
+            item.detailLabelText = value[CredentialKeySSHKey];
+            [section addItem:item];
         }
-
-        item = [RETableViewItem itemWithTitle:@"Password"
-                                accessoryType:UITableViewCellAccessoryNone
-                             selectionHandler:^(RETableViewItem *item) {
-            [item deselectRowAnimated:YES];
-        }];
-        item.style = UITableViewCellStyleValue1;
-        item.detailLabelText = password;
-        [section addItem:item];
 
         item = [RETableViewItem itemWithTitle:@"Delete"
                                 accessoryType:UITableViewCellAccessoryNone
@@ -239,6 +294,14 @@ void OpenAppSettings(void (^completion)(BOOL success))
                                                         preferredStyle:UIAlertControllerStyleActionSheet];
             [alert addDestructiveAction:@"Delete"
                                 handler:^(UIAlertAction *action) {
+                if (type == CredentialKeyTypeSSH) {
+                    NSString *strName = value[CredentialKeySSHKey];
+                    NSString *publicFilePath = kSSHKeyFullPath(kSSHKeyPublicFileName(strName));
+                    NSString *privateFilePath = kSSHKeyFullPath(kSSHKeyPrivateFileName(strName));
+                    DeleteFile(publicFilePath, nil);
+                    DeleteFile(privateFilePath, nil);
+                }
+
                 NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
 
                 [credentialDict setValue:nil
@@ -258,9 +321,9 @@ void OpenAppSettings(void (^completion)(BOOL success))
     return section;
 }
 
-- (RETableViewSection *)_sectionForNewCredential
+- (RETableViewSection *)_sectionForNewCredentialForHTTPS
 {
-    RETableViewSection *section = [RETableViewSection sectionWithHeaderTitle:@"New Credential Info"];
+    RETableViewSection *section = [RETableViewSection sectionWithHeaderTitle:@"New HTTPS Credential Info"];
 
     @weakify(self);
 
@@ -310,13 +373,13 @@ void OpenAppSettings(void (^completion)(BOOL success))
             NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
 
             [credentialDict setValue:@{ CredentialKeyUsername: strUsername,
-                                        CredentialKeyPassword: strPassword }
+                                        CredentialKeyPassword: strPassword,
+                                        CredentialKeyType: @(CredentialKeyTypeHTTPS) }
                               forKey:strSite];
 
             SetCredentials(credentialDict);
 
-            self.showReservedNewCredential = NO;
-            [self _reloadTable];
+            self.credentialType ^= CredentialTypeHTTPS;
         }];
         [section addItem:item];
 
@@ -325,13 +388,114 @@ void OpenAppSettings(void (^completion)(BOOL success))
                              selectionHandler:^(RETableViewItem *item) {
             @strongify(self);
             [item deselectRowAnimated:YES];
-            self.showReservedNewCredential = NO;
-            [self _reloadTable];
+            self.credentialType ^= CredentialTypeHTTPS;
         }];
         [section addItem:item];
     }
 
     return section;
+}
+
+- (RETableViewSection *)_sectionForNewCredentialForSSH
+{
+    RETableViewSection *section = [RETableViewSection sectionWithHeaderTitle:@"New SSH Credential Info" footerTitle:@"ssh-keygen -f <filename>"];
+
+    @weakify(self);
+
+    if (section) {
+        RETextItem *textItemSite = [RETextItem itemWithTitle:@"Site"
+                                                       value:@""
+                                                 placeholder:@"github.com"];
+        textItemSite.style = UITableViewCellStyleValue1;
+        textItemSite.autocorrectionType = UITextAutocorrectionTypeNo;
+        [section addItem:textItemSite];
+
+        RETextItem *textItemNamePrefix = [RETextItem itemWithTitle:@"Filename Prefix"
+                                                             value:@""
+                                                       placeholder:@"id_rsa"];
+        textItemNamePrefix.style = UITableViewCellStyleValue1;
+        textItemNamePrefix.autocorrectionType = UITextAutocorrectionTypeNo;
+        [section addItem:textItemNamePrefix];
+
+        @weakify(textItemSite);
+        @weakify(textItemNamePrefix);
+
+        RETableViewItem *item = [RETableViewItem itemWithTitle:@"Generate"
+                                                 accessoryType:UITableViewCellAccessoryNone
+                                              selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
+            @strongify(textItemSite);
+            @strongify(textItemNamePrefix);
+            [item deselectRowAnimated:YES];
+
+            NSString *strSite = [textItemSite.value trimEmptySpace];
+            NSString *strName = [textItemNamePrefix.value trimEmptySpace];
+
+            if (strSite.length <= 0) {
+                return;
+            }
+
+            if (IsNullString(strName)) {
+                NSString *strDate = [NSDate.date stringFromDateFormat:kDateFormat_Date_Time_Second];
+                strName = [NSString stringWithFormat:@"%@-%@", strSite, strDate];
+            }
+
+            NSString *publicFilePath = kSSHKeyFullPath(kSSHKeyPublicFileName(strName));
+            NSString *privateFilePath = kSSHKeyFullPath(kSSHKeyPrivateFileName(strName));
+
+            if (IsFileExist(publicFilePath) || IsFileExist(privateFilePath)) {
+                HUDToast(self.view).title(@"Key files exist!").show();
+            }
+
+            if (![self _generateRSAKeys:strName]) {
+                HUDToast(self.view).title(@"Failed to generate rsa key files.").show();
+                return;
+            }
+
+            NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
+
+            [credentialDict setValue:@{ CredentialKeySSHKey: strName,
+                                        CredentialKeyType: @(CredentialKeyTypeSSH) }
+                              forKey:strSite];
+
+            SetCredentials(credentialDict);
+
+            self.credentialType ^= CredentialTypeSSH;
+        }];
+        [section addItem:item];
+
+        item = [RETableViewItem itemWithTitle:@"Cancel"
+                                accessoryType:UITableViewCellAccessoryNone
+                             selectionHandler:^(RETableViewItem *item) {
+            @strongify(self);
+            [item deselectRowAnimated:YES];
+            self.credentialType ^= CredentialTypeSSH;
+        }];
+        [section addItem:item];
+    }
+
+    return section;
+}
+
+- (BOOL)_generateRSAKeys:(NSString *)prefix
+{
+    NSString *publicFilePath = kSSHKeyFullPath(kSSHKeyPublicFileName(prefix));
+    NSString *privateFilePath = kSSHKeyFullPath(kSSHKeyPrivateFileName(prefix));
+
+    void (^ cleanup)(void) = ^{
+        DeleteFile(publicFilePath, nil);
+        DeleteFile(privateFilePath, nil);
+    };
+
+    cleanup();
+
+    if (!generate_key(publicFilePath.UTF8String, privateFilePath.UTF8String)) {
+        cleanup();
+        DDLogError(@"Failed to generate rsa key files: %@", publicFilePath);
+        return NO;
+    }
+
+    return YES;
 }
 
 - (void)_editField:(NSString *)text placeholder:(NSString *)placeholder completion:(void (^)(NSString *value))completion

@@ -16,4 +16,5 @@ target 'Reminders Exporter' do
     pod 'DSUtility'
     pod 'HUDHelper'
     pod 'UserDefaultsHelper', '~> 0.1'
+    pod 'OpenSSL-Universal'
 end
