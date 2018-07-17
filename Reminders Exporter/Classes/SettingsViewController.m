@@ -6,6 +6,7 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
+#import <MessageUI/MessageUI.h>
 #import <RETableViewManager/RETableViewManager.h>
 #import <DSUtility/AlertHelper.h>
 #import <DSUtility/NSString+ValueValidation.h>
@@ -15,16 +16,10 @@
 #import "AboutViewController.h"
 #import "UserPreferences.h"
 
-#define kSSHKeyPublicFileName(__prefix__)  [NSString stringWithFormat:@"%@.pub", __prefix__]
-#define kSSHKeyPrivateFileName(__prefix__) [NSString stringWithFormat:@"%@.pem", __prefix__]
-
-#define kSSHKeyFullPath(__filename__)      [GetSSHKeysRootDirectoryPath() URLByAppendingPathComponent:(__filename__)].path
-
-
 typedef NS_OPTIONS (NSUInteger, CredentialType) {
-    CredentialTypeNone  = 0,
-    CredentialTypeHTTPS = 1 << 0,
-    CredentialTypeSSH   = 1 << 1
+    CredentialTypeNone    = 0,
+    CredentialTypeHTTPS   = 1 << 0,
+        CredentialTypeSSH = 1 << 1
 };
 
 #pragma mark - Functions
@@ -41,7 +36,7 @@ void OpenAppSettings(void (^completion)(BOOL success))
 
 #pragma mark - SettingsViewController
 
-@interface SettingsViewController () <RETableViewManagerDelegate>
+@interface SettingsViewController () <RETableViewManagerDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) RETableViewManager *tableManager;
 
@@ -50,6 +45,11 @@ void OpenAppSettings(void (^completion)(BOOL success))
 @end
 
 @implementation SettingsViewController
+
++ (void)load
+{
+    GenerateKeyPair();
+}
 
 - (void)viewDidLoad
 {
@@ -273,13 +273,23 @@ void OpenAppSettings(void (^completion)(BOOL success))
             item.detailLabelText = password;
             [section addItem:item];
         } else if (type == CredentialKeyTypeSSH) {
+            NSString *filePrefix = value[CredentialKeySSHKey];
+
             item = [RETableViewItem itemWithTitle:@"SSH Key"
-                                    accessoryType:UITableViewCellAccessoryNone
+                                    accessoryType:UITableViewCellAccessoryDisclosureIndicator
                                  selectionHandler:^(RETableViewItem *item) {
+                @strongify(self);
                 [item deselectRowAnimated:YES];
+
+                NSString *publicFilePath = GetSSHKeyFullPath(kSSHKeyPublicFileName(filePrefix)).path;
+                NSString *privateFilePath = GetSSHKeyFullPath(kSSHKeyPrivateFileName(filePrefix)).path;
+
+                [self _sendMail:[NSString stringWithFormat:@"My SSH RSA Key - %@", site]
+                           body:@"Check out your ssh key pair in the attachment, feel free to send it to the target code hosting server."
+                    attachments:@[publicFilePath, privateFilePath]];
             }];
             item.style = UITableViewCellStyleValue1;
-            item.detailLabelText = value[CredentialKeySSHKey];
+            item.detailLabelText = filePrefix;
             [section addItem:item];
         }
 
@@ -296,18 +306,13 @@ void OpenAppSettings(void (^completion)(BOOL success))
                                 handler:^(UIAlertAction *action) {
                 if (type == CredentialKeyTypeSSH) {
                     NSString *strName = value[CredentialKeySSHKey];
-                    NSString *publicFilePath = kSSHKeyFullPath(kSSHKeyPublicFileName(strName));
-                    NSString *privateFilePath = kSSHKeyFullPath(kSSHKeyPrivateFileName(strName));
+                    NSString *publicFilePath = GetSSHKeyFullPath(kSSHKeyPublicFileName(strName)).path;
+                    NSString *privateFilePath = GetSSHKeyFullPath(kSSHKeyPrivateFileName(strName)).path;
                     DeleteFile(publicFilePath, nil);
                     DeleteFile(privateFilePath, nil);
                 }
 
-                NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
-
-                [credentialDict setValue:nil
-                                  forKey:site];
-
-                SetCredentials(credentialDict);
+                SetCredential(site, nil);
                 [self _reloadTable];
             }];
             [alert addCancelAction:@"Cancel"
@@ -370,14 +375,9 @@ void OpenAppSettings(void (^completion)(BOOL success))
                 return;
             }
 
-            NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
-
-            [credentialDict setValue:@{ CredentialKeyUsername: strUsername,
-                                        CredentialKeyPassword: strPassword,
-                                        CredentialKeyType: @(CredentialKeyTypeHTTPS) }
-                              forKey:strSite];
-
-            SetCredentials(credentialDict);
+            SetCredential(strSite, @{ CredentialKeyUsername: strUsername,
+                                      CredentialKeyPassword: strPassword,
+                                      CredentialKeyType: @(CredentialKeyTypeHTTPS) });
 
             self.credentialType ^= CredentialTypeHTTPS;
         }];
@@ -440,8 +440,8 @@ void OpenAppSettings(void (^completion)(BOOL success))
                 strName = [NSString stringWithFormat:@"%@-%@", strSite, strDate];
             }
 
-            NSString *publicFilePath = kSSHKeyFullPath(kSSHKeyPublicFileName(strName));
-            NSString *privateFilePath = kSSHKeyFullPath(kSSHKeyPrivateFileName(strName));
+            NSString *publicFilePath = GetSSHKeyFullPath(kSSHKeyPublicFileName(strName)).path;
+            NSString *privateFilePath = GetSSHKeyFullPath(kSSHKeyPrivateFileName(strName)).path;
 
             if (IsFileExist(publicFilePath) || IsFileExist(privateFilePath)) {
                 HUDToast(self.view).title(@"Key files exist!").show();
@@ -452,13 +452,8 @@ void OpenAppSettings(void (^completion)(BOOL success))
                 return;
             }
 
-            NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
-
-            [credentialDict setValue:@{ CredentialKeySSHKey: strName,
-                                        CredentialKeyType: @(CredentialKeyTypeSSH) }
-                              forKey:strSite];
-
-            SetCredentials(credentialDict);
+            SetCredential(strSite, @{ CredentialKeySSHKey: strName,
+                                      CredentialKeyType: @(CredentialKeyTypeSSH) });
 
             self.credentialType ^= CredentialTypeSSH;
         }];
@@ -479,8 +474,8 @@ void OpenAppSettings(void (^completion)(BOOL success))
 
 - (BOOL)_generateRSAKeys:(NSString *)prefix
 {
-    NSString *publicFilePath = kSSHKeyFullPath(kSSHKeyPublicFileName(prefix));
-    NSString *privateFilePath = kSSHKeyFullPath(kSSHKeyPrivateFileName(prefix));
+    NSString *publicFilePath = GetSSHKeyFullPath(kSSHKeyPublicFileName(prefix)).path;
+    NSString *privateFilePath = GetSSHKeyFullPath(kSSHKeyPrivateFileName(prefix)).path;
 
     void (^ cleanup)(void) = ^{
         DeleteFile(publicFilePath, nil);
@@ -522,6 +517,27 @@ void OpenAppSettings(void (^completion)(BOOL success))
     [alert presentInViewController:self];
 }
 
+- (void)_sendMail:(NSString *)title body:(NSString *)body attachments:(NSArray<NSString *> *)paths
+{
+    if (![MFMailComposeViewController canSendMail]) {
+        DDLogError(@"Cannot send mail for this device!");
+        return;
+    }
+
+    MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
+
+    mc.mailComposeDelegate = self;
+    [mc setSubject:title];
+    [mc setMessageBody:body isHTML:NO];
+
+    for (NSString *path in paths) {
+        NSData *fileData = [[NSData alloc] initWithContentsOfFile:path];
+        [mc addAttachmentData:fileData mimeType:@"text/plain" fileName:path.lastPathComponent];
+    }
+
+    [self presentViewController:mc animated:YES completion:nil];
+}
+
 #pragma mark - BuildViewDelegate
 
 - (void)buildSubview:(UIView *)containerView controller:(BaseViewController *)viewController
@@ -551,6 +567,62 @@ void OpenAppSettings(void (^completion)(BOOL success))
 - (BOOL)shouldInvalidateDataForController:(BaseViewController *)viewController
 {
     return NO;
+}
+
+#pragma mark - RETableViewManagerDelegate
+
+- (void)tableView:(UITableView *)tableView willLayoutCellSubviews:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGRect originFrame = cell.textLabel.frame;
+
+    cell.textLabel.frame = CGRectMake(originFrame.origin.x, originFrame.origin.y, originFrame.size.width + 100, originFrame.size.height);
+}
+
+- (void)tableView:(UITableView *)tableView willLoadCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.preservesSuperviewLayoutMargins = NO;
+    cell.layoutMargins = UIEdgeInsetsZero;
+    cell.separatorInset = UIEdgeInsetsZero;
+
+    cell.textLabel.textColor = THEME_BLACK_COLOR;
+    cell.textLabel.font = [UIFont systemFontOfSize:15];
+    cell.detailTextLabel.textColor = [UIColor lightGrayColor];
+    cell.detailTextLabel.font = [UIFont systemFontOfSize:14];
+}
+
+#pragma mark - MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(nullable NSError *)error
+{
+    if (error) {
+        DDLogError(@"%s: error: %@", __func__, error);
+        HUDToast(controller.view).title(@"Failed to send mail!").subTitle(error.description).delay(5).show();
+        return;
+    }
+
+    [controller dismissViewControllerAnimated:YES
+                                   completion:^{
+        NSString *strTitle = nil;
+
+        switch (result) {
+            case MFMailComposeResultSent:
+                strTitle = @"Sent!";
+                break;
+
+            case MFMailComposeResultSaved:
+                strTitle = @"Saved!";
+                break;
+
+            case MFMailComposeResultCancelled:
+                strTitle = @"Cancelled!";
+                break;
+
+            default:
+                break;
+        }
+
+        HUDToastInWindow().title(strTitle).show();
+    }];
 }
 
 @end

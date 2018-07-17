@@ -27,7 +27,9 @@ void SetSignature(NSDictionary *values);
 
 NSDictionary * GetCredentials(void);
 
-void SetCredentials(NSDictionary *values);
+NSDictionary * GetCredentialForSite(NSString *siteKey);
+
+void SetCredential(NSString *siteKey, NSDictionary *values);
 
 
 NSDate * GetLastUpdateDate(void);

@@ -6,6 +6,7 @@
 //  Copyright © 2018 WillHan. All rights reserved.
 //
 
+#import <Security/Security.h>
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #import <DSUtility/NSString+Date.h>
@@ -87,6 +88,66 @@ NSURL * GetSSHKeysRootDirectoryPath(void)
     NSURL *resultURL = [GetRepoRootDirectoryPath() URLByAppendingPathComponent:@".keys" isDirectory:YES];
 
     return CreateDirectoryIfNotExist(resultURL);
+}
+
+NSURL * GetSSHKeyFullPath(NSString *filename)
+{
+    return [GetSSHKeysRootDirectoryPath() URLByAppendingPathComponent:filename];
+}
+
+void GenerateKeyPair()
+{
+    CFStringRef bundleID = CFBundleGetIdentifier(CFBundleGetMainBundle());
+    NSData *tag = [(__bridge NSString *)bundleID dataUsingEncoding:NSUTF8StringEncoding];
+
+    CFTypeRef key = NULL;
+
+    NSDictionary *attr = @{
+                           (id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
+                           (id)kSecAttrKeySizeInBits: @2048,
+                           (id)kSecPrivateKeyAttrs: @{
+                                   (id)kSecAttrIsPermanent:    @YES,
+                                   (id)kSecAttrApplicationTag: tag,
+                                   },
+                           };
+
+    if (SecItemCopyMatching((CFDictionaryRef)attr, &key) == errSecSuccess) {
+        DDLogDebug(@"%@", key);
+    }
+
+    NSDictionary *attributes = @{
+        (id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
+        (id)kSecAttrKeySizeInBits: @2048,
+        (id)kSecPrivateKeyAttrs: @{
+            (id)kSecAttrIsPermanent:    @YES,
+            (id)kSecAttrApplicationTag: tag,
+        },
+    };
+
+    SecKeyRef publicKey, privateKey;
+    OSStatus status = SecKeyGeneratePair((CFDictionaryRef)attributes, &publicKey, &privateKey);
+
+    if (status != errSecSuccess) {
+        return;
+    }
+
+    CFErrorRef error = NULL;
+    CFDataRef publicData = SecKeyCopyExternalRepresentation(publicKey, &error);
+    CFDataRef privateData = SecKeyCopyExternalRepresentation(privateKey, &error);
+
+    NSString *strPublicKey = [(__bridge NSData *)publicData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+    NSString *strPrivateKey = [(__bridge NSData *)privateData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
+
+    DDLogDebug(@"%@", strPublicKey);
+    DDLogDebug(@"%@", strPrivateKey);
+
+    if (publicKey) {
+        CFRelease(publicKey);
+    }
+
+    if (privateKey) {
+        CFRelease(privateKey);
+    }
 }
 
 // How to Use OpenSSL to Generate RSA Keys in C/C++

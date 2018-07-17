@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+#define kSSHKeyPublicFileName(__prefix__)  [NSString stringWithFormat: @"%@.pub", __prefix__]
+#define kSSHKeyPrivateFileName(__prefix__) [NSString stringWithFormat:@"%@.pem", __prefix__]
+
+
 BOOL IsFileExist(NSString *strFilePath);
 
 BOOL DeleteFile(NSString *strFilePath, NSError **outError);
@@ -23,6 +27,10 @@ NSURL * GetRepoRootDirectoryPath(void);
 NSURL * GetReminderRepoRootDirectoryPath(void);
 
 NSURL * GetSSHKeysRootDirectoryPath(void);
+
+NSURL * GetSSHKeyFullPath(NSString *filename);
+
+void GenerateKeyPair();
 
 bool generate_key(const char *public_key_file, const char *private_key_file);
 

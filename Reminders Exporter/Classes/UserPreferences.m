@@ -58,9 +58,17 @@ NSDictionary * GetCredentials(void)
     return UserDefaultObject(kSTRKey_Credentials);
 }
 
-void SetCredentials(NSDictionary *values)
+NSDictionary * GetCredentialForSite(NSString *siteKey)
 {
-    SetUserDefaultObject(kSTRKey_Credentials, values);
+    return UserDefaultObject(kSTRKey_Credentials)[siteKey];
+}
+
+void SetCredential(NSString *siteKey, NSDictionary *values)
+{
+    NSMutableDictionary *credentialDict = [[NSMutableDictionary alloc] initWithDictionary:GetCredentials()];
+
+    [credentialDict setValue:values forKey:siteKey];
+    SetUserDefaultObject(kSTRKey_Credentials, credentialDict);
 }
 
 NSDate * GetLastUpdateDate(void)

@@ -166,7 +166,17 @@
         [section addItem:item];
 
         NSString *urlHost = [NSURL URLWithString:remote.URLString].host;
-        NSDictionary *credentialDict = GetCredentials()[urlHost];
+        NSDictionary *credentialDict = GetCredentialForSite(urlHost);
+        NSUInteger type = [credentialDict[CredentialKeyType] unsignedIntegerValue];
+        NSString *strDisplayKey = nil, *strDisplayValue = nil;
+
+        if (type == CredentialKeyTypeHTTPS) {
+            strDisplayKey = @"Username";
+            strDisplayValue = credentialDict[CredentialKeyUsername];
+        } else if (type == CredentialKeyTypeSSH) {
+            strDisplayKey = @"SSH Key";
+            strDisplayValue = credentialDict[CredentialKeySSHKey];
+        }
 
         item = [RETableViewItem itemWithTitle:@"Credential"
                                 accessoryType:UITableViewCellAccessoryDetailButton
@@ -174,11 +184,11 @@
             [item deselectRowAnimated:YES];
         }];
         item.accessoryButtonTapHandler = ^(id item) {
-            NSString *strMessage = [NSString stringWithFormat:@"Site: %@\nUsername: %@", urlHost, credentialDict[CredentialKeyUsername]];
+            NSString *strMessage = [NSString stringWithFormat:@"Site: %@\n%@: %@", urlHost, strDisplayKey, strDisplayValue];
             HUDToast(self.view).title(@"Credential").subTitle(strMessage).delay(2).show();
         };
         item.style = UITableViewCellStyleValue1;
-        item.detailLabelText = credentialDict[CredentialKeyUsername] ? : @"None";
+        item.detailLabelText = strDisplayValue ? : @"None";
         [section addItem:item];
 
         GTBranch *remoteBranch = [[self.repository remoteBranchesWithError:nil] bk_match:^BOOL (GTBranch *obj) {

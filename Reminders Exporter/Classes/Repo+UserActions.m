@@ -25,21 +25,9 @@
 {
     BOOL result = YES;
     NSError *error = nil;
-    NSDictionary *credentialDict = GetCredentials();
 
     result = [self fetchRemote:remoteName
-            credentialProvider:[GTCredentialProvider providerWithBlock:^GTCredential *(GTCredentialType type, NSString *URL, NSString *userName) {
-        NSString *urlHost = [NSURL URLWithString:URL].host;
-        NSDictionary *dict = credentialDict[urlHost];
-
-        if (dict) {
-            return [GTCredential credentialWithUserName:dict[CredentialKeyUsername]
-                                               password:dict[CredentialKeyPassword]
-                                                  error:nil];
-        }
-
-        return nil;
-    }]
+            credentialProvider:[self _credentialProvider]
                          error:&error];
 
     if (result) {
@@ -77,21 +65,37 @@
 
 - (BOOL)pushToRemotes:(NSError **)error
 {
-    NSDictionary *credentialDict = GetCredentials();
+    return [self pushToRemote:[self _credentialProvider] error:error];
+}
 
-    return [self pushToRemote:[GTCredentialProvider providerWithBlock:^GTCredential *(GTCredentialType type, NSString *URL, NSString *userName) {
+- (GTCredentialProvider *)_credentialProvider
+{
+    return [GTCredentialProvider providerWithBlock:^GTCredential *(GTCredentialType type, NSString *URL, NSString *userName) {
         NSString *urlHost = [NSURL URLWithString:URL].host;
-        NSDictionary *dict = credentialDict[urlHost];
+        NSDictionary *dict = GetCredentialForSite(urlHost);
 
         if (dict) {
-            return [GTCredential credentialWithUserName:dict[CredentialKeyUsername]
-                                               password:dict[CredentialKeyPassword]
-                                                  error:nil];
+            NSUInteger typeValue = [dict[CredentialKeyType] unsignedIntegerValue];
+
+            if (typeValue == CredentialKeyTypeHTTPS) {
+                return [GTCredential credentialWithUserName:dict[CredentialKeyUsername]
+                                                   password:dict[CredentialKeyPassword]
+                                                      error:nil];
+            } else if (typeValue == CredentialKeyTypeSSH) {
+                NSString *prefix = dict[CredentialKeySSHKey];
+                NSURL *publicFilePath = GetSSHKeyFullPath(kSSHKeyPublicFileName(prefix));
+                NSURL *privateFilePath = GetSSHKeyFullPath(kSSHKeyPrivateFileName(prefix));
+
+                return [GTCredential credentialWithUserName:userName
+                                               publicKeyURL:publicFilePath
+                                              privateKeyURL:privateFilePath
+                                                 passphrase:nil
+                                                      error:nil];
+            }
         }
 
         return nil;
-    }]
-                        error:error];
+    }];
 }
 
 @end
