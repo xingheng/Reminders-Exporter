@@ -95,7 +95,7 @@ NSURL * GetSSHKeyFullPath(NSString *filename)
     return [GetSSHKeysRootDirectoryPath() URLByAppendingPathComponent:filename];
 }
 
-void GenerateKeyPair()
+void GenerateKeyPair(void)
 {
     CFStringRef bundleID = CFBundleGetIdentifier(CFBundleGetMainBundle());
     NSData *tag = [(__bridge NSString *)bundleID dataUsingEncoding:NSUTF8StringEncoding];
@@ -103,13 +103,13 @@ void GenerateKeyPair()
     CFTypeRef key = NULL;
 
     NSDictionary *attr = @{
-                           (id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
-                           (id)kSecAttrKeySizeInBits: @2048,
-                           (id)kSecPrivateKeyAttrs: @{
-                                   (id)kSecAttrIsPermanent:    @YES,
-                                   (id)kSecAttrApplicationTag: tag,
-                                   },
-                           };
+        (id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
+        (id)kSecAttrKeySizeInBits: @2048,
+        (id)kSecPrivateKeyAttrs: @{
+            (id)kSecAttrIsPermanent:    @YES,
+            (id)kSecAttrApplicationTag: tag,
+        },
+    };
 
     if (SecItemCopyMatching((CFDictionaryRef)attr, &key) == errSecSuccess) {
         DDLogDebug(@"%@", key);

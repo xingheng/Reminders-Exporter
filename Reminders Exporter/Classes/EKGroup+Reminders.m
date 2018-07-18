@@ -49,36 +49,34 @@
 + (void)fetchRemindersToRepo:(Repo *)repository completion:(void (^)(BOOL, NSArray<EKGroup *> *))completion
 {
     [self fetchReminders:^(NSArray<EKGroup *> *groups) {
-        BOOL result = NO;
+        if (!repository) {
+            !completion ? : completion(groups.count > 0, groups);
+            return;
+        }
 
-        if (repository) {
-            NSURL *repoURL = repository.fileURL;
+        NSURL *repoURL = repository.fileURL;
 
-            for (EKGroup *group in groups) {
-                if (![group serializeToFile:repoURL]) {
-                    NSAssert(NO, @"Fatal!");
-                }
-            }
-
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
-            });
-
-            if ([repository commitWorkingFiles]) {
-                result = [repository pushToRemotes:nil];
+        for (EKGroup *group in groups) {
+            if (![group serializeToFile:repoURL]) {
+                NSAssert(NO, @"Fatal!");
             }
         }
 
-        if (completion) {
-            if ([NSThread isMainThread]) {
-                completion(result, groups);
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(result, groups);
-                });
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            DDLogVerbose(@"Serialized reminders data to files to %@.", repoURL);
+        });
+
+        [repository commitWorkingFiles:^(BOOL res, NSError *error) {
+            if (!res) {
+                !completion ? : completion(res, groups);
+                return;
             }
-        }
+
+            [repository pushToRemotes:^(BOOL res, NSError *error) {
+                !completion ? : completion(res, groups);
+            }];
+        }];
     }];
 }
 

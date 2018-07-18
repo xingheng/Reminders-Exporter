@@ -10,10 +10,10 @@
 
 @interface Repo (UserActions)
 
-- (BOOL)commitWorkingFiles;
+- (void)commitWorkingFiles:(RepoOperationBlock)completion;
 
-- (BOOL)pullFromRemote:(NSString *)remoteName merge:(BOOL (^)(void))conflictBlock error:(NSError **)outError;
+- (void)pullFromRemote:(NSString *)remoteName merge:(BOOL (^)(void))conflictBlock completion:(RepoOperationBlock)completion;
 
-- (BOOL)pushToRemotes:(NSError **)error;
+- (void)pushToRemotes:(RepoOperationBlock)completion;
 
 @end

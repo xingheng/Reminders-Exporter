@@ -11,26 +11,28 @@
 
 @implementation Repo (UserActions)
 
-- (BOOL)commitWorkingFiles
+- (void)commitWorkingFiles:(RepoOperationBlock)completion
 {
     NSDictionary *dict = GetSignature();
     GTSignature *signature = [[GTSignature alloc] initWithName:dict[SignatureUsername]
                                                          email:dict[SignatureEmail]
                                                           time:NSDate.date];
 
-    return [self commitWorkingFiles:signature];
+    [self commitWorkingFiles:signature completion:completion];
 }
 
-- (BOOL)pullFromRemote:(NSString *)remoteName merge:(BOOL (^)(void))conflictBlock error:(NSError **)outError
+- (void)pullFromRemote:(NSString *)remoteName merge:(BOOL (^)(void))conflictBlock completion:(RepoOperationBlock)completion
 {
-    BOOL result = YES;
-    NSError *error = nil;
+    [self      fetchRemote:remoteName
+        credentialProvider:[self _credentialProvider]
+                completion:^(BOOL res, NSError *err) {
+        if (!res) {
+            !completion ? : completion(res, err);
+            return;
+        }
 
-    result = [self fetchRemote:remoteName
-            credentialProvider:[self _credentialProvider]
-                         error:&error];
-
-    if (result) {
+        __block BOOL result = YES;
+        __block NSError *error = nil;
         NSArray<GTBranch *> *remoteBranches = [[self remoteBranchesWithError:&error] bk_select:^BOOL (GTBranch *obj) {
             return [obj.remoteName isEqualToString:remoteName];
         }];
@@ -46,26 +48,26 @@
         }
 
         if (targetBranch) {
-            result = [self mergeBranchIntoCurrentBranch:targetBranch withError:&error];
+            result = [self mergeBranchIntoCurrentBranch:targetBranch
+                                              withError:&error];
 
             if (conflictBlock && !result && [error.domain isEqualToString:GTGitErrorDomain] && error.code == GIT_ECONFLICT) {
-                if (conflictBlock() && (result = [self commitWorkingFiles])) {
-                    error = nil;
+                if (conflictBlock()) {
+                    [self commitWorkingFiles:^(BOOL res, NSError *err) {
+                        result = res;
+                        error = err;
+                    }];
                 }
             }
         }
-    }
 
-    if (error && outError) {
-        *outError = error;
-    }
-
-    return result;
+        RunInMainQueue(completion, result, error);
+    }];
 }
 
-- (BOOL)pushToRemotes:(NSError **)error
+- (void)pushToRemotes:(RepoOperationBlock)completion
 {
-    return [self pushToRemote:[self _credentialProvider] error:error];
+    return [self pushToRemote:[self _credentialProvider] completion:completion];
 }
 
 - (GTCredentialProvider *)_credentialProvider

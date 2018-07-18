@@ -30,7 +30,7 @@ NSURL * GetSSHKeysRootDirectoryPath(void);
 
 NSURL * GetSSHKeyFullPath(NSString *filename);
 
-void GenerateKeyPair();
+void GenerateKeyPair(void);
 
 bool generate_key(const char *public_key_file, const char *private_key_file);
 

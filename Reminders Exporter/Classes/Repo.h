@@ -8,14 +8,19 @@
 
 #import <ObjectiveGit/ObjectiveGit.h>
 
+typedef void (^RepoOperationBlock)(BOOL result, NSError *error);
+
+void RunInMainQueue(RepoOperationBlock block, BOOL result, NSError *error);
+
+
 @interface Repo : GTRepository
 
 - (instancetype)initWithURL:(NSURL *)localFileURL createIfNotExist:(BOOL)flag error:(NSError *_Nullable __autoreleasing *)error;
 
-- (BOOL)commitWorkingFiles:(GTSignature *)signature;
+- (void)commitWorkingFiles:(GTSignature *)signature completion:(RepoOperationBlock)completion;
 
-- (BOOL)fetchRemote:(NSString *)remoteName credentialProvider:(GTCredentialProvider *)provider error:(NSError **)outError;
+- (void)fetchRemote:(NSString *)remoteName credentialProvider:(GTCredentialProvider *)provider completion:(RepoOperationBlock)completion;
 
-- (BOOL)pushToRemote:(GTCredentialProvider *)provider error:(NSError **)outError;
+- (void)pushToRemote:(GTCredentialProvider *)provider completion:(RepoOperationBlock)completion;
 
 @end

@@ -8,6 +8,21 @@
 
 #import "Repo.h"
 
+void RunInMainQueue(RepoOperationBlock block, BOOL result, NSError *error)
+{
+    if (!block) {
+        return;
+    }
+
+    if ([NSThread isMainThread]) {
+        block(result, error);
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            block(result, error);
+        });
+    }
+}
+
 static const void *const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
 
 @implementation Repo
@@ -28,12 +43,12 @@ static const void *const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
     return self;
 }
 
-- (BOOL)commitWorkingFiles:(GTSignature *)signature
+- (void)commitWorkingFiles:(GTSignature *)signature completion:(RepoOperationBlock)completion
 {
-    __block BOOL result = YES;
-    __block NSError *error = nil;
+    [self _runInSerialQueue:^{
+        BOOL result = YES;
+        NSError *error = nil;
 
-    [self _runInSerialQueueSync:^{
         GTIndex *index = [self indexWithError:&error];
         BOOL hasChanges = NO, hasConflict = NO;
 
@@ -92,6 +107,8 @@ static const void *const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
         if (!hasChanges) {
             DDLogVerbose(@"Nothing changes.");
             result = NO;
+
+            RunInMainQueue(completion, NO, nil);
             return;
         }
 
@@ -116,16 +133,15 @@ static const void *const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
                       resetType:GTRepositoryResetTypeHard
                           error:&error];
         }
-    }];
 
-    return result;
+        RunInMainQueue(completion, commit, error);
+    }];
 }
 
-- (BOOL)fetchRemote:(NSString *)remoteName credentialProvider:(GTCredentialProvider *)provider error:(NSError **)outError
+- (void)fetchRemote:(NSString *)remoteName credentialProvider:(GTCredentialProvider *)provider completion:(RepoOperationBlock)completion
 {
-    __block NSError *error = nil;
-
-    [self _runInSerialQueueSync:^{
+    [self _runInSerialQueue:^{
+        NSError *error = nil;
         GTRemote *remote = [GTRemote remoteWithName:remoteName
                                        inRepository:self
                                               error:&error];
@@ -140,21 +156,16 @@ static const void *const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
                 }
             }];
         }
+
+        RunInMainQueue(completion, remote, error);
     }];
-
-    if (error && outError) {
-        *outError = error;
-    }
-
-    return !error;
 }
 
-- (BOOL)pushToRemote:(GTCredentialProvider *)provider error:(NSError **)outError
+- (void)pushToRemote:(GTCredentialProvider *)provider completion:(RepoOperationBlock)completion
 {
-    __block BOOL result = YES;
-    __block NSError *error = nil;
-
-    [self _runInSerialQueueSync:^{
+    [self _runInSerialQueue:^{
+        BOOL result = YES;
+        NSError *error = nil;
         NSArray<NSString *> *remoteNames = [self remoteNamesWithError:&error];
 
         for (NSString *remoteName in remoteNames) {
@@ -173,13 +184,9 @@ static const void *const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
                 }
             }];
         }
+
+        RunInMainQueue(completion, result, error);
     }];
-
-    if (error && outError) {
-        *outError = error;
-    }
-
-    return result;
 }
 
 #pragma mark - Private
@@ -205,14 +212,14 @@ static const void *const kDispatchQueueSpecificKey = &kDispatchQueueSpecificKey;
     return allFiles;
 }
 
-- (void)_runInSerialQueueSync:(dispatch_block_t)block
+- (void)_runInSerialQueue:(dispatch_block_t)block
 {
     BOOL isInternalQueue = self == dispatch_get_specific(kDispatchQueueSpecificKey);
 
     if (isInternalQueue) {
         block();
     } else {
-        dispatch_sync(workerQueue, block);
+        dispatch_async(workerQueue, block);
     }
 }
 

@@ -201,11 +201,11 @@
             @strongify(self);
             [item deselectRowAnimated:YES];
 
+            HUDIndicator(self.view).show();
             @weakify(self);
-            NSError *error = nil;
 
-            if (![self.repository pullFromRemote:remote.name
-                                           merge:^BOOL {
+            [self.repository pullFromRemote:remote.name
+                                      merge:^BOOL {
                 @strongify(self);
                 dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);
 
@@ -217,9 +217,13 @@
                 dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
                 return NO;
             }
-                                           error:&error]) {
-                HUDToast(self.view).title(@"Pull changes failed!").subTitle(error.description).delay(5).show();
-            }
+                                 completion:^(BOOL result, NSError *error) {
+                HUDHide(self.view);
+
+                if (!result) {
+                    HUDToast(self.view).title(@"Pull changes failed!").subTitle(error.description).delay(5).show();
+                }
+            }];
         }];
         item.style = UITableViewCellStyleValue1;
         item.detailLabelText = [remoteBranch targetCommitWithError:nil].commitDate.descriptionForCurrentLocale;
@@ -230,7 +234,18 @@
                              selectionHandler:^(RETableViewItem *item) {
             @strongify(self);
             [item deselectRowAnimated:YES];
-            [self.repository pushToRemotes:nil];
+
+            HUDIndicator(self.view).show();
+            @weakify(self);
+
+            [self.repository pushToRemotes:^(BOOL result, NSError *error) {
+                @strongify(self);
+                HUDHide(self.view);
+
+                if (!result) {
+                    HUDToast(self.view).title(@"Push Error").subTitle(error.description).delay(3).show();
+                }
+            }];
         }];
         item.style = UITableViewCellStyleValue1;
         item.detailLabelText = [remoteBranch targetCommitWithError:nil].commitDate.descriptionForCurrentLocale;
